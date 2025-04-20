@@ -81,3 +81,12 @@ body {
     padding: 10px 20px;
     font-size: 16px;
 }
+
+.chordName {
+    background-color: #c8672ad0;
+    width: 450px;
+    text-align: center;
+    margin: auto;
+    border: 1px solid black;
+    font-size: 40px;
+}

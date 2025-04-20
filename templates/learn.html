@@ -6,13 +6,11 @@
 <div class="chord-container">
     <div class="selectChordText">Select Chord</div>
     <div class="chord-grid">
-        <button class="chord-block">A</button>
-        <button class="chord-block">D</button>
-        <button class="chord-block">E</button>
-        <button class="chord-block">Am</button>
-        <button class="chord-block">Em</button>
-        <button class="chord-block">Dm</button>
-        <button class="chord-block">G</button>
+        {% for chord in ['A', 'D', 'E', 'Am', 'Em', 'Dm', 'C', 'G'] %}
+            <form action="{{ url_for('chord_detail', chord_name=chord) }}" method="get">
+                <button type="submit" class="chord-block">{{ chord }}</button>
+            </form>
+        {% endfor %}
     </div>
     <div class="chord-actions">
         <button class="action-button">Learn in Order</button>
