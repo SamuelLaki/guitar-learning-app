@@ -3,11 +3,15 @@ body {
     color: #434141;
 }
 
+.navigationBar {
+    background-color: #713b1cd3;
+}
+
 .navbar-brand {
     width: 35px;  /* Adjust size */
     height: 35px;
     margin-right: 10px;
-    stroke: #434141;
+    color: #434141;
 }
 
 .navbar-nav .nav-item .nav-link {
@@ -32,4 +36,9 @@ body {
     margin-left: auto;
     margin-right: auto;
     object-fit: contain;
+}
+
+.selectChordText {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.659);
 }
