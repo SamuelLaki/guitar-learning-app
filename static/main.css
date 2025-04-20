@@ -1,21 +1,22 @@
-body {
-    background-color: #dedbdb5e;
+* {
     color: #434141;
 }
 
-.navigationBar {
+body {
+    background-color: #dedbdb5e;
+}
+
+.navigationBar, .chord-block, .action-button {
     background-color: #713b1cd3;
 }
 
 .navbar-brand {
-    width: 35px;  /* Adjust size */
+    width: 35px;
     height: 35px;
     margin-right: 10px;
-    color: #434141;
 }
 
 .navbar-nav .nav-item .nav-link {
-    color: #434141;
     font-size: 1rem !important;
     padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x) !important;
     line-height: var(--bs-body-line-height) !important;
@@ -41,4 +42,42 @@ body {
 .selectChordText {
     text-align: center;
     color: rgba(0, 0, 0, 0.659);
+}
+
+.chord-container {
+    text-align: center;
+    padding-top: 40px;
+}
+
+.chord-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.chord-block, .action-button {
+    stroke: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.chord-block {
+    width: 80px;
+    height: 80px;
+    font-size: 24px;
+}
+
+.chord-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.action-button {
+    padding: 10px 20px;
+    font-size: 16px;
 }
