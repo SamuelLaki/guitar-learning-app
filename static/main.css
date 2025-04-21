@@ -95,7 +95,7 @@ body {
     font-size: 40px;
 }
 
-.chord-header {
+.chord-header-row {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -144,3 +144,62 @@ body {
 .show-audio {
     display: block;
 }  
+
+.chord-image-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.chord-nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 40px 0 40px;
+}
+  
+.arrow-button {
+    position: relative;
+    background-color: #f2f2f2;
+    border: 2px solid #000;
+    color: #000;
+    padding: 8px 16px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.arrow-button:hover {
+    background-color: #e0e0e0;
+}
+  
+.left-arrow::before {
+    content: "";
+    position: absolute;
+    left: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-right: 16px solid #f2f2f2;
+    border-left: none;
+    border-right-color: #000;
+}
+  
+.right-arrow::after {
+    content: "";
+    position: absolute;
+    right: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-left: 16px solid #f2f2f2;
+    border-right: none;
+    border-left-color: #000;
+}

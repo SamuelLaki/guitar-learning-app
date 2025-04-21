@@ -77,14 +77,18 @@ def homepage():
 def learn():
     return render_template('learn.html', chord_items=chord_items)
 
-@app.route('/quiz')
-def quiz():
-    return render_template('quiz.html')
+@app.route('/quiz/<int:page_num>')
+def quiz_page(page_num):
+    return render_template('quiz.html', page_num=page_num)
 
 @app.route('/learn/<int:chord_id>')
 def chord_detail(chord_id):
     chord_item = next((chord_item for chord_item in chord_items if chord_item["id"] == chord_id), None)
     return render_template('chord_detail.html', requested_chord=chord_item)
+
+@app.route('/chord-reading-basics')
+def chord_reading_basics():
+    return render_template('chord_reading_basics.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
