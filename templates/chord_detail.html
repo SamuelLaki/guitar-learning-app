@@ -1,7 +1,29 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ chord }} Chord{% endblock %}
+{% block title %}{{ requested_chord.name }} Chord{% endblock %}
 
 {% block content %}
-    <div class="chordName">{{ chord }} CHORD</div>
+    <div class="chord-detail-wrapper">
+        <div class="chord-header">
+            <button id="play-audio" class="audio-button" onclick="toggleAudioPlayer()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#555">
+                    <path d="M3 10v4h4l5 5V5l-5 5H3z"/>
+                </svg>
+            </button>
+            <div class="chordName">{{ requested_chord.name }} CHORD</div>
+        </div>
+
+        <div id="audio-player-container" class="hidden-audio">
+            <audio id="chord-audio" controls>
+            <source src="{{ requested_chord.audio }}?raw=true" type="audio/mpeg">
+            Your browser does not support the audio element.
+            </audio>
+        </div>
+
+        <img src="{{ requested_chord.image }}" 
+            alt="{{requested_chord.name}} chord diagram" 
+            class="chordImages img-fluid">
+    </div>
+  
+    <script src="{{ url_for('static', filename='audioPlayer.js') }}"></script>  
 {% endblock %}

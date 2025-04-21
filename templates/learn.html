@@ -6,9 +6,9 @@
 <div class="chord-container">
     <div class="selectChordText">Select Chord</div>
     <div class="chord-grid">
-        {% for chord in ['A', 'D', 'E', 'Am', 'Em', 'Dm', 'C', 'G'] %}
-            <form action="{{ url_for('chord_detail', chord_name=chord) }}" method="get">
-                <button type="submit" class="chord-block">{{ chord }}</button>
+        {% for chord in chord_items %}
+            <form action="{{ url_for('chord_detail', chord_id=chord.id) }}" method="get">
+                <button type="submit" class="chord-block">{{ chord.name }}</button>
             </form>
         {% endfor %}
     </div>
