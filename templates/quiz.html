@@ -17,6 +17,8 @@
 
     <div class="feedback-container">
         <div id="feedback-message" style="display: none;"></div>
+        <!-- Moved Study Chord Button Placeholder here -->
+        <a href="#" id="study-chord-btn" class="study-button" style="display: none;"><div class="arrow-button">Study Chord</div></a>
     </div>
 
     <div class="quiz-content">
@@ -42,18 +44,9 @@
 
     <div class="navigation-buttons">
         {% if page_num > 1 %}
-        <a href="{{ url_for('quiz_page', page_num=page_num-1) }}" class="go-back-btn">
-            <div class="arrow-button left-arrow">Previous</div>
-        </a>
-        {% else %}
-        <a href="{{ url_for('learn') }}" class="go-back-btn">
-            <div class="arrow-button left-arrow">Go Back</div>
-        </a>
-        {% endif %}
-        
-        <div class="next-btn disabled">
-            <div class="arrow-button right-arrow">Next</div>
-        </div>
+        <a href="{{ url_for('quiz_page', page_num=page_num-1) }}" class="go-back-btn"><div class="arrow-button left-arrow">Previous</div></a>{% else %}<a href="{{ url_for('learn') }}" class="go-back-btn"><div class="arrow-button left-arrow">Go Back</div></a>{% endif %}
+        <!-- Removed Study Chord Button from here -->
+        <div class="next-btn disabled"><div class="arrow-button right-arrow">Next</div></div>
     </div>
 </div>
 
@@ -117,7 +110,8 @@
             if (hasAnswered) return; // Prevent dragging after answer
             this.classList.add('dragging');
             e.dataTransfer.setData('text', this.id);
-            showFeedback('info', 'Dragging chord...');
+            // Remove the info message displayed during drag
+            // showFeedback('info', 'Dragging chord...'); 
         });
         
         chordDiagram.addEventListener('dragend', function() {
@@ -165,6 +159,10 @@
             success: function(response) {
                 hasAnswered = true; // Set answered flag
                 
+                // Clear previous feedback message and hide button initially
+                feedbackDiv.hide();
+                $('#study-chord-btn').hide(); 
+
                 if (response.correct) {
                     // Correct answer
                     optionElement.addClass('correct');
@@ -177,7 +175,13 @@
                     if (correctOptionElement) { 
                         correctOptionElement.addClass('correct'); // Show the correct one
                     }
-                    showFeedback('error', 'Not quite! The correct answer is "' + correctAnswer + '".');
+                    showFeedback('error', 'Not quite!');
+                    
+                    // Show the Study Chord button if we have the ID
+                    if (response.correct_chord_id) {
+                        var studyUrl = "/learn/" + response.correct_chord_id;
+                        $('#study-chord-btn').attr('href', studyUrl).fadeIn();
+                    }
                 }
                 
                 // Enable the next button

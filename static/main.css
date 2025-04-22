@@ -237,14 +237,17 @@ body {
 .feedback-container {
     margin: 10px 0;
     padding: 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 #feedback-message {
-    padding: 12px 15px;
+    padding: 10px 15px;
     border-radius: 5px;
-    text-align: center;
     font-weight: bold;
-    margin-bottom: 15px;
     border: 1px solid;
 }
 
@@ -385,12 +388,30 @@ body {
 .navigation-buttons {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-top: auto;
-    padding: 20px 0;
+    padding: 15px 20px;
     position: sticky;
     bottom: 0;
-    background-color: #dedbdb5e;
     z-index: 50;
+    gap: 15px;
+}
+
+/* Style for the new study button */
+.study-button {
+    text-decoration: none;
+}
+
+.study-button .arrow-button {
+    background-color: #ffc107;
+    border-color: #e0a800;
+    color: #333;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.study-button .arrow-button:hover {
+    background-color: #e0a800;
 }
 
 .next-btn.disabled {

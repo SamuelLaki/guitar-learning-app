@@ -185,14 +185,23 @@ def submit_answer():
     correct_answer = data.get('correct_answer')
     current_page = session.get('current_page', 1)
     
+    is_correct = (user_answer == correct_answer)
+    correct_chord_id = None
+
     # Update the score if answer is correct
-    if user_answer == correct_answer:
+    if is_correct:
         session['quiz_score'] = session.get('quiz_score', 0) + 1
+    else:
+        # Find the ID of the correct chord to allow linking back
+        correct_chord_item = next((item for item in chord_items if item["name"] == correct_answer), None)
+        if correct_chord_item:
+            correct_chord_id = correct_chord_item["id"]
     
-    # Return the result
+    # Return the result including the correct chord ID if wrong
     result = {
-        'correct': user_answer == correct_answer,
-        'next_page': current_page + 1 if current_page < len(quiz_data) else 'results'
+        'correct': is_correct,
+        'next_page': current_page + 1 if current_page < len(quiz_data) else 'results',
+        'correct_chord_id': correct_chord_id # Will be None if correct
     }
     
     return jsonify(result)
