@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, json, session
+import random # Import the random module
 
 app = Flask(__name__)
 app.secret_key = 'guitar_chord_quiz_key'  # Secret key for session management
@@ -148,23 +149,24 @@ def start_quiz():
 @app.route('/quiz/<int:page_num>')
 def quiz_page(page_num):
     # Find the quiz data for the requested page
-    page_data = next((data for data in quiz_data if data["page"] == page_num), None)
+    # IMPORTANT: Make a copy to avoid modifying the original quiz_data
+    page_data_original = next((data for data in quiz_data if data["page"] == page_num), None)
     
     # If page doesn't exist and we've gone through all pages, show results
-    if not page_data:
+    if not page_data_original:
         if page_num > len(quiz_data):
             return redirect(url_for('quiz_results'))
         else:
-            # Create a default page if somehow we have a gap
-            page_data = {
-                "page": page_num,
-                "chord": {
-                    "id": "chord1",
-                    "chord_id": 1,
-                    "correctAnswer": "A"
-                },
-                "options": ["A", "C", "D"]
-            }
+            # Use the first question as a default fallback
+            page_data_original = quiz_data[0]
+    
+    # Make a deep copy to shuffle options without affecting the original list
+    page_data = page_data_original.copy()
+    page_data['options'] = page_data['options'][:] # Shallow copy of options list is sufficient
+    
+    # Shuffle the options for this specific request
+    if 'options' in page_data:
+        random.shuffle(page_data['options'])
     
     # Update current page in session
     session['current_page'] = page_num
