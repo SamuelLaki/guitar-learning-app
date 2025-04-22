@@ -69,6 +69,42 @@ chord_items = [
     }
 ]
 
+# Quiz data configuration
+quiz_data = [
+    {
+        "page": 1,
+        "chords": [
+            {
+                "id": "chord1",
+                "chord_id": 4,  # Reference to Am chord
+                "correctAnswer": "Am"
+            },
+            {
+                "id": "chord2",
+                "chord_id": 7,  # Reference to C chord
+                "correctAnswer": "C" 
+            }
+        ],
+        "options": ["Am", "E", "C", "D"]
+    },
+    {
+        "page": 2,
+        "chords": [
+            {
+                "id": "chord1",
+                "chord_id": 1,  # Reference to A chord
+                "correctAnswer": "A"
+            },
+            {
+                "id": "chord2",
+                "chord_id": 8,  # Reference to G chord
+                "correctAnswer": "G"
+            }
+        ],
+        "options": ["G", "A", "C", "Am"]
+    }
+]
+
 @app.route('/')
 def homepage():
     return render_template('homepage.html')
@@ -79,7 +115,31 @@ def learn():
 
 @app.route('/quiz/<int:page_num>')
 def quiz_page(page_num):
-    return render_template('quiz.html', page_num=page_num)
+    # Find the quiz data for the requested page
+    page_data = next((data for data in quiz_data if data["page"] == page_num), None)
+    
+    # If page doesn't exist, redirect to page 1
+    if not page_data:
+        if page_num > len(quiz_data):
+            return redirect(url_for('quiz_page', page_num=1))
+        else:
+            # Create a default page if somehow we have a gap
+            page_data = {
+                "page": page_num,
+                "chords": [
+                    {"id": "chord1", "chord_id": 4, "correctAnswer": "Am"},
+                    {"id": "chord2", "chord_id": 7, "correctAnswer": "C"}
+                ],
+                "options": ["Am", "E", "C", "D"]
+            }
+    
+    # Enrich the chord data with the actual chord details from chord_items
+    for chord in page_data["chords"]:
+        chord_item = next((item for item in chord_items if item["id"] == chord["chord_id"]), None)
+        if chord_item:
+            chord["image"] = chord_item["image"]
+    
+    return render_template('quiz.html', page_num=page_num, quiz_data=page_data, chord_items=chord_items)
 
 @app.route('/learn/<int:chord_id>')
 def chord_detail(chord_id):

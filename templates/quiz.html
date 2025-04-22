@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+
+{% block title %}Quiz - Match Chords{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+    <div class="quiz-title">
+        <h2>Match the chords to their name</h2>
+    </div>
+
+    <div class="quiz-content">
+        <div class="chord-diagrams">
+            <!-- Loop through chords in the quiz data -->
+            {% for chord in quiz_data.chords %}
+            <div class="chord-diagram" id="{{ chord.id }}" data-answer="{{ chord.correctAnswer }}">
+                <img src="{{ chord.image }}" alt="{{ chord.correctAnswer }} chord" class="chord-image">
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="chord-options">
+            <!-- Loop through options in the quiz data -->
+            {% for option in quiz_data.options %}
+            <div class="chord-option" id="option{{ loop.index }}" data-chord="{{ option }}">
+                <div class="chord-name">{{ option }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="navigation-buttons">
+        <!-- Navigation buttons -->
+        {% if page_num > 1 %}
+        <a href="{{ url_for('quiz_page', page_num=page_num-1) }}" class="go-back-btn">
+            <div class="arrow-button left-arrow">Go Back</div>
+        </a>
+        {% else %}
+        <a href="{{ url_for('learn') }}" class="go-back-btn">
+            <div class="arrow-button left-arrow">Go Back</div>
+        </a>
+        {% endif %}
+        
+        <a href="{{ url_for('quiz_page', page_num=page_num+1) }}" class="next-btn">
+            <div class="arrow-button right-arrow">Next</div>
+        </a>
+    </div>
+</div>
+
+<!-- Pass data to JavaScript -->
+<script type="text/javascript">
+    var chordItemsData = {{ chord_items|tojson|safe }};
+</script>
+
+<script>
+    // Get chord items data
+    var chordItems = {{ chord_items|tojson|safe }};
+    
+    $(document).ready(function() {
+        // Initialize drag and drop
+        $(".chord-diagram").droppable({
+            accept: ".chord-option",
+            drop: handleChordDrop
+        });
+
+        $(".chord-option").draggable({
+            revert: "invalid",
+            helper: "clone",
+            containment: ".quiz-content",
+            cursor: "move"
+        });
+    });
+
+    function handleChordDrop(event, ui) {
+        var chordDiagram = $(this);
+        var draggedOption = ui.draggable;
+        
+        // Get answers
+        var correctAnswer = chordDiagram.data('answer');
+        var userAnswer = draggedOption.data('chord');
+        
+        // Create or get the arrow
+        var arrow = chordDiagram.find('.connection-arrow');
+        if (arrow.length === 0) {
+            arrow = $('<div class="connection-arrow"></div>');
+            chordDiagram.append(arrow);
+        }
+        
+        // Position the arrow
+        positionConnectionArrow(chordDiagram, draggedOption, arrow);
+        
+        // Remove existing feedback
+        $('.feedback-bubble').remove();
+        
+        // Show feedback
+        if (correctAnswer === userAnswer) {
+            // Correct answer
+            draggedOption.addClass('correct').removeClass('incorrect');
+            var goodFeedback = $('<div class="feedback-bubble correct">excellent</div>');
+            draggedOption.append(goodFeedback);
+        } else {
+            // Incorrect answer
+            draggedOption.addClass('incorrect').removeClass('correct');
+            var badFeedback = $('<div class="feedback-bubble incorrect">Revise ' + correctAnswer + '</div>');
+            draggedOption.append(badFeedback);
+            
+            // Add link to learn the chord
+            badFeedback.click(function() {
+                for (var i = 0; i < chordItems.length; i++) {
+                    if (chordItems[i].name === correctAnswer) {
+                        window.location.href = "/learn/" + chordItems[i].id;
+                        break;
+                    }
+                }
+            });
+        }
+    }
+
+    function positionConnectionArrow(from, to, arrow) {
+        var fromRect = from[0].getBoundingClientRect();
+        var toRect = to[0].getBoundingClientRect();
+        
+        // Calculate midpoints
+        var fromX = fromRect.left + fromRect.width / 2;
+        var fromY = fromRect.top + fromRect.height / 2;
+        var toX = toRect.left + toRect.width / 2;
+        var toY = toRect.top + toRect.height / 2;
+        
+        // Calculate angle and distance
+        var angle = Math.atan2(toY - fromY, toX - fromX) * 180 / Math.PI;
+        var distance = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
+        
+        // Set arrow position
+        arrow.css({
+            'position': 'absolute',
+            'left': fromX + 'px',
+            'top': fromY + 'px',
+            'width': distance + 'px',
+            'transform': 'rotate(' + angle + 'deg)',
+            'transform-origin': '0 0',
+            'border-top': '2px solid black',
+            'z-index': '1000'
+        });
+    }
+</script>
+{% endblock %}

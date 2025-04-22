@@ -203,3 +203,124 @@ body {
     border-right: none;
     border-left-color: #000;
 }
+
+/* Quiz page styles */
+.quiz-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.quiz-title {
+    text-align: center;
+    margin-bottom: 30px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f8f8f8;
+}
+
+.quiz-title h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.quiz-content {
+    display: flex;
+    justify-content: space-between;
+    margin: 40px 0;
+    position: relative;
+}
+
+.chord-diagrams {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.chord-diagram {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.chord-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.chord-options {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.chord-option {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+.chord-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #000;
+    background-color: #f8f8f8;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.chord-option.correct .chord-name {
+    background-color: #adff2f;
+}
+
+.chord-option.incorrect .chord-name {
+    background-color: #ff6b6b;
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+}
+
+.connection-arrow {
+    position: absolute;
+    height: 2px;
+    background-color: #000;
+    transform-origin: 0 0;
+}
+
+.feedback-bubble {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background-color: #fff;
+    border-radius: 20px;
+    border: 1px solid #000;
+    white-space: nowrap;
+    text-align: center;
+    cursor: pointer;
+}
+
+.feedback-bubble.correct {
+    background-color: #adff2f;
+}
+
+.feedback-bubble.incorrect {
+    background-color: #ff6b6b;
+}
+
+.hidden {
+    display: none;
+}
