@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}Quiz Results{% endblock %}
+
+{% block content %}
+<div class="quiz-results-container">
+    <div class="score-display">
+        <h2>You scored a {{ score }}/{{ total }}!</h2>
+    </div>
+    
+    <div class="results-actions">
+        <a href="{{ url_for('homepage') }}" class="home-button">
+            <div class="arrow-button">Go Home</div>
+        </a>
+        
+        <a href="{{ url_for('start_quiz') }}" class="retry-button">
+            <div class="arrow-button">Try Again</div>
+        </a>
+        
+        <a href="{{ url_for('learn') }}" class="learn-button">
+            <div class="arrow-button">Continue Learning</div>
+        </a>
+    </div>
+</div>
+{% endblock %} 

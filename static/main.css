@@ -209,45 +209,106 @@ body {
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .quiz-title {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     border: 1px solid #ccc;
-    padding: 10px;
+    padding: 15px;
     background-color: #f8f8f8;
 }
 
 .quiz-title h2 {
-    margin: 0;
-    font-size: 24px;
+    margin: 0 0 10px 0;
+    font-size: 28px;
+}
+
+.quiz-progress {
+    font-size: 16px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Feedback styles */
+.feedback-container {
+    margin: 10px 0;
+    padding: 0 10px;
+}
+
+#feedback-message {
+    padding: 12px 15px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 15px;
+    border: 1px solid;
+}
+
+.success-message {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.info-message {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
 }
 
 .quiz-content {
     display: flex;
+    flex-direction: column;
+    flex: 1;
     justify-content: space-between;
-    margin: 40px 0;
     position: relative;
-    min-height: 500px; /* Ensure enough space for the diagrams and options */
+    margin-bottom: 20px;
 }
 
-.chord-diagrams {
-    width: 40%;
+.chord-diagram-container {
     display: flex;
-    flex-direction: column;
-    gap: 100px; /* Increased space between chord diagrams */
-    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    position: relative;
 }
 
 .chord-diagram {
     position: relative;
-    width: 200px;
-    height: 200px;
-    border: 1px dashed #ccc;
+    width: 180px;
+    height: 180px;
+    border: 2px solid #ccc;
     padding: 10px;
     border-radius: 5px;
     background-color: #f9f9f9;
+    margin: 0 auto;
+    cursor: move;
+    transition: all 0.3s ease;
+}
+
+.chord-diagram.dragging {
+    opacity: 0.8;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.drag-hint {
+    position: absolute;
+    bottom: -25px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
 }
 
 .chord-image {
@@ -256,21 +317,37 @@ body {
     object-fit: contain;
 }
 
+.chord-options-container {
+    margin-top: 50px;
+    padding-bottom: 40px;
+}
+
 .chord-options {
-    width: 40%;
     display: flex;
-    flex-direction: column;
-    gap: 50px; /* Increased space between options */
-    align-items: center;
-    margin-top: 30px; /* Add some top margin to center vertically */
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
 }
 
 .chord-option {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 180px;
+    height: 180px;
     cursor: pointer;
     user-select: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chord-option:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.chord-option.drag-over {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+    border: 2px dashed #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
 }
 
 .chord-name {
@@ -279,95 +356,150 @@ body {
     align-items: center;
     width: 100%;
     height: 100%;
-    border: 1px solid #000;
+    border: 2px solid #000;
     background-color: #f8f8f8;
-    font-size: 24px;
+    font-size: 32px;
     font-weight: bold;
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .chord-option.correct .chord-name {
     background-color: #adff2f;
     border-color: #7fb718;
+    box-shadow: 0 0 10px rgba(127, 183, 24, 0.5);
 }
 
 .chord-option.incorrect .chord-name {
     background-color: #ff6b6b;
     border-color: #c43c3c;
+    box-shadow: 0 0 10px rgba(196, 60, 60, 0.5);
+}
+
+.correct-match {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.7) !important;
+    border-color: #7fb718 !important;
 }
 
 .navigation-buttons {
     display: flex;
     justify-content: space-between;
-    margin-top: 40px;
+    margin-top: auto;
+    padding: 20px 0;
+    position: sticky;
+    bottom: 0;
+    background-color: #dedbdb5e;
+    z-index: 50;
 }
 
-.connection-arrow {
-    position: absolute;
-    pointer-events: none;
+.next-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-.feedback-bubble {
-    position: absolute;
-    top: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 8px 12px;
-    background-color: #fff;
-    border-radius: 20px;
-    border: 1px solid #000;
-    white-space: nowrap;
+.next-btn.disabled .arrow-button {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Quiz results page */
+.quiz-results-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
     text-align: center;
-    cursor: pointer;
-    z-index: 1100;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.feedback-bubble.correct {
-    background-color: #adff2f;
-    border-color: #7fb718;
+.score-display {
+    background-color: #e0e0e0;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 40px;
 }
 
-.feedback-bubble.incorrect {
-    background-color: #ff6b6b;
-    border-color: #c43c3c;
+.score-display h2 {
+    font-size: 36px;
+    margin: 0;
 }
 
-.feedback-bubble:hover {
-    transform: translateX(-50%) scale(1.05);
+.results-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-.hidden {
-    display: none;
-}
-
-/* Arrow head styling */
-.arrow-head {
-    position: absolute;
-    right: -8px;
-    top: -4px;
-    width: 0;
-    height: 0;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    border-left: 8px solid black;
+.results-actions .arrow-button {
+    padding: 12px 24px;
+    font-size: 18px;
 }
 
 /* Additional responsive adjustments */
 @media (max-width: 768px) {
-    .quiz-content {
-        flex-direction: column;
-        align-items: center;
-        gap: 30px;
+    .chord-diagram {
+        width: 180px;
+        height: 180px;
     }
     
-    .chord-diagrams, .chord-options {
-        width: 100%;
+    .chord-options {
+        gap: 20px;
+    }
+    
+    .chord-option {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .chord-name {
+        font-size: 24px;
+    }
+    
+    .score-display h2 {
+        font-size: 28px;
+    }
+    
+    .results-actions .arrow-button {
+        padding: 8px 16px;
+        font-size: 16px;
+    }
+}
+
+@media (max-height: 700px) {
+    .quiz-container {
+        height: auto;
+        min-height: 100vh;
     }
     
     .chord-diagram {
-        width: 150px;
-        height: 150px;
+        width: 180px;
+        height: 180px;
     }
+    
+    .chord-options-container {
+        margin-top: 30px;
+        padding-bottom: 20px;
+    }
+}
+
+/* jQuery UI tooltip styling */
+.ui-tooltip {
+    padding: 8px;
+    background-color: #333;
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    max-width: 300px;
+}
+
+.ui-tooltip:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    margin-left: -10px;
+    border-width: 10px 10px 0;
+    border-style: solid;
+    border-color: #333 transparent;
 }
