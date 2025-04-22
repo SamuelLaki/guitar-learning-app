@@ -40,6 +40,7 @@
     <script src="{{ url_for('static', filename='audioPlayer.js') }}"></script>  
     <script>
         const chordId = {{ requested_chord.id | tojson }};
+        const chordName = {{ requested_chord.name | tojson }};
     </script>    
     <script src="{{ url_for('static', filename='chordTracker.js') }}"></script>  
 {% endblock %}

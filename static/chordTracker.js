@@ -9,7 +9,8 @@ $(document).ready(function () {
         contentType: 'application/json',
         data: JSON.stringify({
             event: 'entered',
-            chord_id: chordId,
+            //chord_id: chordId,
+            chord_name: chordName,
             timestamp: entryTime.toLocaleTimeString('en-US')
         })
     });
@@ -25,7 +26,8 @@ $(document).ready(function () {
 
         const payload = JSON.stringify({
             event: 'exited',
-            chord_id: chordId,
+            //chord_id: chordId,
+            chord_name: chordName,
             timestamp: exitTime.toLocaleTimeString('en-US'),
             duration: formattedDuration
         });

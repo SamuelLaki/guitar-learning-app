@@ -239,7 +239,7 @@ def log_chord_access():
     if data is None:
         data = json.loads(request.data.decode('utf-8'))
 
-    log_msg = f"User {data['event']} chord ID {data['chord_id']} at {data['timestamp']}"
+    log_msg = f"User {data['event']} {data['chord_name']} chord at {data['timestamp']}"
     if 'duration' in data:
         log_msg += f" (Time spent: {data['duration']})"
 
