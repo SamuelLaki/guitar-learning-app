@@ -102,6 +102,38 @@ quiz_data = [
             }
         ],
         "options": ["G", "A", "C", "Am"]
+    },
+    {
+        "page": 3,
+        "chords": [
+            {
+                "id": "chord1",
+                "chord_id": 3,  # Reference to E chord
+                "correctAnswer": "E"
+            },
+            {
+                "id": "chord2",
+                "chord_id": 5,  # Reference to Em chord
+                "correctAnswer": "Em"
+            }
+        ],
+        "options": ["E", "Em", "Dm", "G"]
+    },
+    {
+        "page": 4,
+        "chords": [
+            {
+                "id": "chord1",
+                "chord_id": 2,  # Reference to D chord
+                "correctAnswer": "D"
+            },
+            {
+                "id": "chord2",
+                "chord_id": 6,  # Reference to Dm chord
+                "correctAnswer": "Dm"
+            }
+        ],
+        "options": ["D", "Dm", "A", "Em"]
     }
 ]
 

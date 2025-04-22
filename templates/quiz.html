@@ -40,9 +40,15 @@
         </a>
         {% endif %}
         
+        {% if page_num < 4 %}
         <a href="{{ url_for('quiz_page', page_num=page_num+1) }}" class="next-btn">
             <div class="arrow-button right-arrow">Next</div>
         </a>
+        {% else %}
+        <a href="{{ url_for('learn') }}" class="next-btn">
+            <div class="arrow-button right-arrow">Finish</div>
+        </a>
+        {% endif %}
     </div>
 </div>
 
@@ -57,18 +63,29 @@
     
     $(document).ready(function() {
         // Initialize drag and drop
-        $(".chord-diagram").droppable({
-            accept: ".chord-option",
-            drop: handleChordDrop
-        });
-
+        initializeQuiz();
+    });
+    
+    function initializeQuiz() {
+        // Make chord options draggable
         $(".chord-option").draggable({
             revert: "invalid",
             helper: "clone",
             containment: ".quiz-content",
             cursor: "move"
         });
-    });
+        
+        // Make chord diagrams droppable
+        $(".chord-diagram").droppable({
+            accept: ".chord-option",
+            drop: handleChordDrop,
+            tolerance: "intersect"
+        });
+        
+        // Clear any existing arrows and feedback
+        $(".connection-arrow").remove();
+        $(".feedback-bubble").remove();
+    }
 
     function handleChordDrop(event, ui) {
         var chordDiagram = $(this);
@@ -78,18 +95,23 @@
         var correctAnswer = chordDiagram.data('answer');
         var userAnswer = draggedOption.data('chord');
         
-        // Create or get the arrow
-        var arrow = chordDiagram.find('.connection-arrow');
+        // Create or update the connection arrow
+        var arrowId = chordDiagram.attr('id') + '-to-' + draggedOption.attr('id');
+        var arrow = $('#' + arrowId);
+        
         if (arrow.length === 0) {
-            arrow = $('<div class="connection-arrow"></div>');
-            chordDiagram.append(arrow);
+            arrow = $('<div class="connection-arrow" id="' + arrowId + '"></div>');
+            $('body').append(arrow); // Append to body to avoid parent container issues
         }
         
-        // Position the arrow
-        positionConnectionArrow(chordDiagram, draggedOption, arrow);
+        // Remove existing feedback for this option
+        draggedOption.find('.feedback-bubble').remove();
         
-        // Remove existing feedback
-        $('.feedback-bubble').remove();
+        // Remove existing arrow for this chord
+        $('.connection-arrow[id^="' + chordDiagram.attr('id') + '"]').not('#' + arrowId).remove();
+        
+        // Draw the arrow
+        drawConnectionArrow(chordDiagram, draggedOption, arrow);
         
         // Show feedback
         if (correctAnswer === userAnswer) {
@@ -115,31 +137,76 @@
         }
     }
 
-    function positionConnectionArrow(from, to, arrow) {
+    function drawConnectionArrow(from, to, arrow) {
+        // Get positions relative to the viewport
         var fromRect = from[0].getBoundingClientRect();
         var toRect = to[0].getBoundingClientRect();
         
-        // Calculate midpoints
-        var fromX = fromRect.left + fromRect.width / 2;
-        var fromY = fromRect.top + fromRect.height / 2;
-        var toX = toRect.left + toRect.width / 2;
-        var toY = toRect.top + toRect.height / 2;
+        // Calculate the starting and ending points
+        var fromCenterX = fromRect.left + fromRect.width / 2;
+        var fromCenterY = fromRect.top + fromRect.height / 2;
+        var toCenterX = toRect.left + toRect.width / 2;
+        var toCenterY = toRect.top + toRect.height / 2;
         
-        // Calculate angle and distance
-        var angle = Math.atan2(toY - fromY, toX - fromX) * 180 / Math.PI;
-        var distance = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
+        // Adjust for scroll position
+        var scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+        var scrollY = window.pageYOffset || document.documentElement.scrollTop;
         
-        // Set arrow position
+        fromCenterX += scrollX;
+        fromCenterY += scrollY;
+        toCenterX += scrollX;
+        toCenterY += scrollY;
+        
+        // Calculate angle and length
+        var angle = Math.atan2(toCenterY - fromCenterY, toCenterX - fromCenterX) * 180 / Math.PI;
+        var length = Math.sqrt(Math.pow(toCenterX - fromCenterX, 2) + Math.pow(toCenterY - fromCenterY, 2));
+        
+        // Apply to the arrow element
         arrow.css({
             'position': 'absolute',
-            'left': fromX + 'px',
-            'top': fromY + 'px',
-            'width': distance + 'px',
-            'transform': 'rotate(' + angle + 'deg)',
+            'left': fromCenterX + 'px',
+            'top': fromCenterY + 'px',
+            'width': length + 'px',
+            'height': '2px',
+            'background-color': 'black',
             'transform-origin': '0 0',
-            'border-top': '2px solid black',
-            'z-index': '1000'
+            'transform': 'rotate(' + angle + 'deg)',
+            'z-index': '1000',
+            'pointer-events': 'none' // So the arrow doesn't interfere with draggable elements
+        });
+        
+        // Add arrow head
+        var arrowHead = arrow.find('.arrow-head');
+        if (arrowHead.length === 0) {
+            arrowHead = $('<div class="arrow-head"></div>');
+            arrow.append(arrowHead);
+        }
+        
+        arrowHead.css({
+            'position': 'absolute',
+            'right': '-8px',
+            'top': '-4px',
+            'width': '0',
+            'height': '0',
+            'border-top': '5px solid transparent',
+            'border-bottom': '5px solid transparent',
+            'border-left': '8px solid black'
         });
     }
+    
+    // Handle window resize to reposition arrows
+    $(window).resize(function() {
+        $('.connection-arrow').each(function() {
+            var arrowId = $(this).attr('id');
+            var parts = arrowId.split('-to-');
+            if (parts.length === 2) {
+                var fromElement = $('#' + parts[0]);
+                var toElement = $('#' + parts[1]);
+                if (fromElement.length > 0 && toElement.length > 0) {
+                    drawConnectionArrow(fromElement, toElement, $(this));
+                }
+            }
+        });
+    });
 </script>
 {% endblock %}
