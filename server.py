@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, json, session
 import random # Import the random module
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'guitar_chord_quiz_key'  # Secret key for session management
@@ -10,42 +11,49 @@ chord_items = [
         "name": "A",
         "image": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/images/A_chord_image.jpg?raw=true",
         "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/A_chord_audio.mp3?raw=true",
+        "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/A_chord_audio.mp3?raw=true"
     },
     {
         "id": 2,
         "name": "D",
         "image": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/images/D_chord_image.jpg?raw=true",
         "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/D_chord_audio.mp3?raw=true",
+        "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/D_chord_audio.mp3?raw=true"
     },
     {
         "id": 3,
         "name": "E",
         "image": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/images/E_chord_image.jpg?raw=true",
         "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/E_chord_audio.mp3?raw=true",
+        "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/E_chord_audio.mp3?raw=true"
     },
     {
         "id": 4,
         "name": "Am",
         "image": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/images/Am_chord_image.jpg?raw=true",
         "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/Am_chord_audio.mp3?raw=true",
+        "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/Am_chord_audio.mp3?raw=true"
     },
     {
         "id": 5,
         "name": "Em",
         "image": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/images/Em_chord_image.jpg?raw=true",
         "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/Em_chord_audio.mp3?raw=true",
+        "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/Em_chord_audio.mp3?raw=true"
     },
     {
         "id": 6,
         "name": "Dm",
         "image": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/images/Dm_chord_image.jpg?raw=true",
         "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/Dm_chord_audio.mp3?raw=true",
+        "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/Dm_chord_audio.mp3?raw=true"
     },
     {
         "id": 7,
         "name": "C",
         "image": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/images/C_chord_image.jpg?raw=true",
         "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/C_chord_audio.mp3?raw=true",
+        "audio": "https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/chord_audios/C_chord_audio.mp3?raw=true"
     },
     {
         "id": 8,
@@ -222,6 +230,22 @@ def chord_detail(chord_id):
 @app.route('/chord-reading-basics')
 def chord_reading_basics():
     return render_template('chord_reading_basics.html')
+
+@app.route('/log-chord-access', methods=['POST'])
+def log_chord_access():
+    data = request.get_json()  # Works for jQuery AJAX
+
+    # Fallback if request.json is None (common with sendBeacon)
+    if data is None:
+        data = json.loads(request.data.decode('utf-8'))
+
+    log_msg = f"User {data['event']} chord ID {data['chord_id']} at {data['timestamp']}"
+    if 'duration' in data:
+        log_msg += f" (Time spent: {data['duration']})"
+
+    print(log_msg)
+
+    return jsonify({"status": "logged"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
