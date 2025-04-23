@@ -1,0 +1,53 @@
+{# templates/chord_reading_basics.html #}
+{% extends "layout.html" %}
+{% block title %}Chord Reading Basics{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <h1 class="text-center mb-5">Chord Reading Basics</h1>
+
+  <div class="row g-5">
+    <!-- Diagram -->
+    <div class="col-lg-6">
+      <figure class="text-center">
+        <img src="{{ url_for('static', filename='images/chord_basics_diagram.jpg') }}"
+             alt="How to read a guitar chord diagram"
+             class="img-fluid border rounded shadow-sm">
+        <figcaption class="mt-3 small text-muted">
+          <strong>Tip:</strong> “X” mutes a string (don’t play); “◯” means open string.
+          Numbers show suggested fingering.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="col-lg-6">
+      <h3 class="mb-4">Finger-number legend</h3>
+      <ul class="list-group list-group-flush fs-5">
+        <li class="list-group-item border-0 ps-0">1  = Index finger</li>
+        <li class="list-group-item border-0 ps-0">2  = Middle finger</li>
+        <li class="list-group-item border-0 ps-0">3  = Ring finger</li>
+        <li class="list-group-item border-0 ps-0">4  = Little finger (Pinky)</li>
+        <li class="list-group-item border-0 ps-0">T  = Thumb (rare)</li>
+      </ul>
+      <p class="mt-4 text-muted">
+        Each horizontal bar is a fret; the thick top line is the nut (fret 0).
+      </p>
+    </div>
+  </div>
+
+  <hr class="my-5">
+
+  <!-- nav buttons -->
+  <div class="d-flex justify-content-between">
+    <a href="{{ url_for('learn') }}"
+       class="arrow-button left-arrow text-decoration-none">
+      Go Back
+    </a>
+    <a href="{{ url_for('chord_detail', chord_id=1) }}"
+       class="arrow-button right-arrow text-decoration-none">
+      Next →
+    </a>
+  </div>
+</div>
+{% endblock %}

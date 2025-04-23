@@ -18,7 +18,11 @@
         </form>
     </div>
     <div class="chord-actions">
-        <button class="action-button">Chord Reading Basics</button>
-    </div>
+        <form action="{{ url_for('chord_reading_basics') }}" method="get">
+          <button type="submit" class="action-button">
+            Chord Reading Basics
+          </button>
+        </form>
+      </div>
 </div>
 {% endblock %}
