@@ -524,3 +524,14 @@ body {
     border-style: solid;
     border-color: #333 transparent;
 }
+
+/* Show Bootstrap dropdown on hover instead of click */
+.nav-item.dropdown:hover > .dropdown-menu {
+    display: block;
+  }
+  
+  /* Optional: hide the little ▼ icon on the toggle link */
+  .dropdown-toggle::after {
+    display: none;
+  }
+  

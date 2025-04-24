@@ -139,6 +139,11 @@ quiz_data = [
     }
 ]
 
+# Make chord_items available in all templates
+@app.context_processor
+def inject_chords():
+    return dict(chord_items=chord_items)
+
 @app.route('/')
 def homepage():
     return render_template('homepage.html')
