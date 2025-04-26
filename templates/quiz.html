@@ -44,9 +44,9 @@
 
     <div class="navigation-buttons">
         {% if page_num > 1 %}
-        <a href="{{ url_for('quiz_page', page_num=page_num-1) }}" class="go-back-btn"><div class="arrow-button left-arrow">Previous</div></a>{% else %}<a href="{{ url_for('learn') }}" class="go-back-btn"><div class="arrow-button left-arrow">Go Back</div></a>{% endif %}
+        <a href="{{ url_for('quiz_page', page_num=page_num-1) }}" class="go-back-btn"><div class="left-arrow-button left-arrow">Previous</div></a>{% else %}<a href="{{ url_for('learn') }}" class="go-back-btn"><div class="left-arrow-button left-arrow">Go Back</div></a>{% endif %}
         <!-- Removed Study Chord Button from here -->
-        <div class="next-btn disabled"><div class="arrow-button right-arrow">Next</div></div>
+        <div class="next-btn disabled"><div class="right-arrow-button right-arrow">Next</div></div>
     </div>
 </div>
 

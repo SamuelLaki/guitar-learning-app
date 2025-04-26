@@ -28,11 +28,11 @@
 
         <div class="chord-nav-buttons">
             <a href="{% if requested_chord.id == 1 %}{{ url_for('chord_reading_basics') }}{% else %}{{ url_for('chord_detail', chord_id=requested_chord.id - 1) }}{% endif %}"
-                class="arrow-button left-arrow">
+                class="left-arrow-button left-arrow">
                 Go Back
             </a>
             <a href="{% if requested_chord.id == 8 %}{{ url_for('quiz_page', page_num=1) }}{% else %}{{ url_for('chord_detail', chord_id=requested_chord.id + 1) }}{% endif %}"
-                class="arrow-button right-arrow">
+                class="right-arrow-button right-arrow">
                 Next
             </a>
         </div>
@@ -41,6 +41,6 @@
     <script>
         const chordId = {{ requested_chord.id | tojson }};
         const chordName = {{ requested_chord.name | tojson }};
-    </script>    
+    </script>  
     <script src="{{ url_for('static', filename='chordTracker.js') }}"></script>  
 {% endblock %}

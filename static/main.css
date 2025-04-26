@@ -6,7 +6,7 @@ body {
     background-color: #dedbdb5e;
 }
 
-.navigationBar, .chord-block, .action-button {
+.navigationBar, .chord-block, .action-button, .right-arrow-button {
     background-color: #713b1cd3;
 }
 
@@ -86,8 +86,11 @@ body {
     margin-top: -20px;
 }
 
-.chordName {
+.chordName, .left-arrow-button {
     background-color: #c8672ad0;
+}
+
+.chordName {
     width: 450px;
     text-align: center;
     margin: auto;
@@ -158,9 +161,9 @@ body {
     margin: 30px 40px 0 40px;
 }
   
-.arrow-button {
+.left-arrow-button, .right-arrow-button {
     position: relative;
-    background-color: #f2f2f2;
+    /*background-color: #f2f2f2;*/
     border: 2px solid #000;
     color: #000;
     padding: 8px 16px;
