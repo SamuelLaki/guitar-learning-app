@@ -3,44 +3,70 @@
 {% block title %}{{ requested_chord.name }} Chord{% endblock %}
 
 {% block content %}
-    <div class="chord-detail-wrapper">
-        <div class="chord-header-row">
-            <button id="play-audio" class="audio-button" onclick="toggleAudioPlayer()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#555">
-                    <path d="M3 10v4h4l5 5V5l-5 5H3z"/>
-                </svg>
-            </button>
-            <div class="chordName">{{ requested_chord.name }} CHORD</div>
-        </div>
-
-        <div id="audio-player-container" class="hidden-audio">
-            <audio id="chord-audio" controls>
-                <source src="{{ requested_chord.audio }}?raw=true" type="audio/mp3">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
-
-        <div class="chord-image-wrapper">
-            <img src="{{ requested_chord.image }}" 
-                alt="{{requested_chord.name}} chord diagram" 
-                class="chordImages img-fluid">            
-        </div>
-
-        <div class="chord-nav-buttons">
-            <a href="{% if requested_chord.id == 1 %}{{ url_for('chord_reading_basics') }}{% else %}{{ url_for('chord_detail', chord_id=requested_chord.id - 1) }}{% endif %}"
-                class="left-arrow-button left-arrow">
-                Go Back
-            </a>
-            <a href="{% if requested_chord.id == 8 %}{{ url_for('quiz_page', page_num=1) }}{% else %}{{ url_for('chord_detail', chord_id=requested_chord.id + 1) }}{% endif %}"
-                class="right-arrow-button right-arrow">
-                Next
-            </a>
-        </div>
+  <!-- Animated, striped progress bar -->
+  <div class="my-4">
+    <div class="d-flex justify-content-between mb-1">
+      <span class="fw-semibold">Chord {{ current_chord }} of {{ total_chords }}</span>
+      <span class="text-muted">{{ percent_complete }}%</span>
     </div>
-    <script src="{{ url_for('static', filename='audioPlayer.js') }}"></script>  
-    <script>
-        const chordId = {{ requested_chord.id | tojson }};
-        const chordName = {{ requested_chord.name | tojson }};
-    </script>  
-    <script src="{{ url_for('static', filename='chordTracker.js') }}"></script>  
+    <div class="progress" role="progressbar"
+         aria-valuenow="{{ percent_complete }}"
+         aria-valuemin="0" aria-valuemax="100"
+         style="height: 1.5rem;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated"
+           style="width: {{ percent_complete }}%;"
+           >{{ percent_complete }}%
+      </div>
+    </div>
+  </div>
+
+  <div class="chord-detail-wrapper">
+      <div class="chord-header-row">
+          <button id="play-audio" class="audio-button" onclick="toggleAudioPlayer()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#555">
+                  <path d="M3 10v4h4l5 5V5l-5 5H3z"/>
+              </svg>
+          </button>
+          <div class="chordName">{{ requested_chord.name }} CHORD</div>
+      </div>
+
+      <div id="audio-player-container" class="hidden-audio">
+          <audio id="chord-audio" controls>
+              <source src="{{ requested_chord.audio }}?raw=true" type="audio/mp3">
+              Your browser does not support the audio element.
+          </audio>
+      </div>
+
+      <div class="chord-image-wrapper">
+          <img src="{{ requested_chord.image }}" 
+               alt="{{ requested_chord.name }} chord diagram" 
+               class="chordImages img-fluid">            
+      </div>
+
+      <div class="chord-nav-buttons">
+          <a href="{% if requested_chord.id == 1 %}
+                      {{ url_for('chord_reading_basics') }}
+                    {% else %}
+                      {{ url_for('chord_detail', chord_id=requested_chord.id - 1) }}
+                    {% endif %}"
+             class="left-arrow-button left-arrow">
+              Go Back
+          </a>
+          <a href="{% if requested_chord.id == total_chords %}
+                      {{ url_for('quiz_page', page_num=1) }}
+                    {% else %}
+                      {{ url_for('chord_detail', chord_id=requested_chord.id + 1) }}
+                    {% endif %}"
+             class="right-arrow-button right-arrow">
+              Next
+          </a>
+      </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='audioPlayer.js') }}"></script>  
+  <script>
+      const chordId = {{ requested_chord.id | tojson }};
+      const chordName = {{ requested_chord.name | tojson }};
+  </script>  
+  <script src="{{ url_for('static', filename='chordTracker.js') }}"></script>  
 {% endblock %}
