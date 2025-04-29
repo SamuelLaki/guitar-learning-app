@@ -153,32 +153,53 @@ def learn():
 
 @app.route('/quiz/start')
 def start_quiz():
-    # Reset the quiz score
-    session['quiz_score'] = 0
-    session['current_page'] = 1
-    return redirect(url_for('quiz_page', page_num=1))
+    last_page = session.get('last_quiz_page')
+    total_pages = len(quiz_data)
+
+    # Check if there's a valid last page stored and it's not beyond the last question
+    if last_page and 0 < last_page <= total_pages:
+        # Resume from the last page, score is already maintained in session via submit_answer
+        return redirect(url_for('quiz_page', page_num=last_page))
+    else:
+        # Start fresh: Reset score and last page
+        session['quiz_score'] = 0
+        session['last_quiz_page'] = 1 # Start at page 1
+        session['current_page'] = 1 # Ensure current_page is also reset
+        return redirect(url_for('quiz_page', page_num=1))
 
 @app.route('/quiz/<int:page_num>')
 def quiz_page(page_num):
     page_data_original = next((data for data in quiz_data if data["page"] == page_num), None)
     if not page_data_original:
+        # If requested page doesn't exist (e.g., user manually enters URL)
+        # Clear last page and redirect to results or start
+        session.pop('last_quiz_page', None)
         if page_num > len(quiz_data):
-            return redirect(url_for('quiz_results'))
+             return redirect(url_for('quiz_results'))
         else:
-            page_data_original = quiz_data[0]
+             # Should ideally not happen with start_quiz logic, but redirect to start as fallback
+             return redirect(url_for('start_quiz'))
+
     page_data = page_data_original.copy()
     page_data['options'] = page_data['options'][:]
     random.shuffle(page_data['options'])
-    session['current_page'] = page_num
+
+    # Store the current page number in the session
+    session['last_quiz_page'] = page_num
+    session['current_page'] = page_num # Keep current_page updated as well
+
     chord_item = next((item for item in chord_items if item["id"] == page_data["chord"]["chord_id"]), None)
     if chord_item:
         page_data["chord"]["image"] = chord_item["image"]
     total_pages = len(quiz_data)
+    quiz_percent_complete = round((page_num / total_pages) * 100) if total_pages > 0 else 0
+
     return render_template('quiz.html',
                            page_num=page_num,
                            quiz_data=page_data,
-                           chord_items=chord_items,
-                           total_pages=total_pages)
+                           chord_items=chord_items, # Ensure chord_items is passed if needed by template base
+                           total_pages=total_pages,
+                           quiz_percent_complete=quiz_percent_complete)
 
 @app.route('/quiz/submit_answer', methods=['POST'])
 def submit_answer():
@@ -205,6 +226,10 @@ def submit_answer():
 def quiz_results():
     score = session.get('quiz_score', 0)
     total = len(quiz_data)
+    # Clear quiz progress and score now that it's finished
+    session.pop('last_quiz_page', None)
+    session.pop('quiz_score', None)
+    session.pop('current_page', None) # Also clear current_page
     return render_template('quiz_results.html', score=score, total=total)
 
 @app.route('/learn/<int:chord_id>')

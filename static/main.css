@@ -1,13 +1,37 @@
-* {
-    color: #434141;
+html, body {
+    height: 100%; /* Ensure html and body take full height */
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent scrolling on the body */
 }
 
 body {
     background-color: #dedbdb5e;
+    display: flex; /* Use flexbox for overall layout */
+    flex-direction: column; /* Stack children vertically */
 }
 
-.navigationBar, .chord-block, .action-button, .right-arrow-button {
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Allow wrapper to grow and fill body */
+    min-height: 0; /* Prevent flex item from overflowing */
+}
+
+.navigationBar {
+    flex-shrink: 0; /* Prevent navbar from shrinking */
+    /* ... existing navbar styles ... */
     background-color: #713b1cd3;
+}
+
+.main-content-area {
+    flex-grow: 1; /* Make content area fill remaining space */
+    overflow-y: hidden; /* Strictly prevent scrolling within the content area */
+    padding-bottom: 20px; /* Add some padding at the bottom */
+}
+
+* {
+    color: #434141;
 }
 
 .navbar-brand {
@@ -32,7 +56,7 @@ body {
 
 .homepageImg {
     width: 100%;
-    height: 560px !important;
+    max-height: calc(70vh - 120px); /* Further reduced max height */
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -107,12 +131,12 @@ body {
 
 .chordImages {
     width: 100%;
-    height: 560px !important;
+    max-height: calc(75vh - 160px); /* Further reduced max height */
     display: block;
     margin-left: auto;
     margin-right: auto;
     object-fit: contain;
-    padding-top: 20px
+    padding-top: 10px; /* Reduced padding */
 }
 
 .audio-player-section {
@@ -163,7 +187,6 @@ body {
   
 .left-arrow-button, .right-arrow-button {
     position: relative;
-    /*background-color: #f2f2f2;*/
     border: 2px solid #000;
     color: #000;
     padding: 8px 16px;
@@ -171,6 +194,8 @@ body {
     text-decoration: none;
     border-radius: 4px;
     transition: background-color 0.2s ease;
+    /* Ensure background color is applied */
+    background-color: #713b1cd3; 
 }
 
 .arrow-button:hover {
@@ -212,7 +237,8 @@ body {
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
-    height: 100vh;
+    /* height: 100vh; */ /* Remove fixed viewport height */
+    height: 100%; /* Make it fill the parent (.main-content-area) */
     display: flex;
     flex-direction: column;
 }
@@ -234,6 +260,20 @@ body {
     font-size: 16px;
     color: #666;
     margin-top: 5px;
+}
+
+/* Renamed original quiz-progress to avoid conflict */
+.quiz-progress-text {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 5px; /* Add some space below the text */
+}
+
+/* Style for the new quiz progress bar */
+.quiz-progress-bar {
+    margin-top: 5px; /* Add space above the bar */
+    margin-bottom: 15px; /* Add space below the bar */
+    height: 1rem; /* Consistent height */
 }
 
 /* Feedback styles */
@@ -422,7 +462,7 @@ body {
     cursor: not-allowed;
 }
 
-.next-btn.disabled .arrow-button {
+.next-btn.disabled .right-arrow-button { /* Target the inner button when disabled */
     background-color: #ccc;
     cursor: not-allowed;
 }
@@ -537,4 +577,3 @@ body {
   .dropdown-toggle::after {
     display: none;
   }
-  

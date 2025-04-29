@@ -56,12 +56,12 @@
               Go Back
           </a>
           <a href="{% if requested_chord.id == total_chords %}
-                      {{ url_for('quiz_page', page_num=1) }}
+                      {{ url_for('start_quiz') }} {# Point to start_quiz instead of page 1 #}
                     {% else %}
                       {{ url_for('chord_detail', chord_id=requested_chord.id + 1) }}
                     {% endif %}"
              class="right-arrow-button right-arrow">
-              Next
+              {% if requested_chord.id == total_chords %}Start Quiz{% else %}Next{% endif %}
           </a>
       </div>
   </div>
