@@ -5,24 +5,117 @@
 {% block content %}
 <div class="chord-container">
     <div class="selectChordText">Select Chord</div>
+    
+    <!-- Progress bar -->
+    <div class="learning-progress my-3">
+        {% set completed_count = session.get('completed_chords', [])|length %}
+        {% set total_count = chord_items|length %}
+        {% set percent = (completed_count / total_count * 100)|round|int if total_count > 0 else 0 %}
+        <div class="progress-text">Your Progress: {{ completed_count }} of {{ total_count }} chords ({{ percent }}%)</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: {{ percent }}%"></div>
+        </div>
+    </div>
+    
+    {% if completed_count > 0 %}
+    <div class="reset-container">
+        <button id="reset-progress" class="reset-button">Reset Progress</button>
+    </div>
+    {% endif %}
+    
     <div class="chord-grid">
         {% for chord in chord_items %}
             <form action="{{ url_for('chord_detail', chord_id=chord.id) }}" method="get">
-                <button type="submit" class="chord-block">{{ chord.name }}</button>
+                <button type="submit" class="chord-block {% if chord.id in session.get('completed_chords', []) %}completed-chord{% endif %}">
+                    {{ chord.name }}
+                    {% if chord.id in session.get('completed_chords', []) %}
+                    <span class="completed-mark">✓</span>
+                    {% endif %}
+                </button>
             </form>
         {% endfor %}
     </div>
+    
     <div class="chord-actions">
         <form action="{{ url_for('chord_detail', chord_id=1) }}" method="get">
             <button type="submit" class="action-button">Learn in Order</button>
         </form>
     </div>
+    
     <div class="chord-actions">
         <form action="{{ url_for('chord_reading_basics') }}" method="get">
           <button type="submit" class="action-button">
             Chord Reading Basics
           </button>
         </form>
-      </div>
+    </div>
 </div>
+
+<style>
+.learning-progress {
+    margin: 20px 0;
+}
+.progress-text {
+    text-align: center;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.progress-bar-container {
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    background-color: #4CAF50;
+    transition: width 0.5s ease;
+}
+.reset-container {
+    text-align: right;
+    margin-bottom: 10px;
+}
+.reset-button {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+.completed-chord {
+    background-color: #e8f5e9;
+    border: 2px solid #4CAF50;
+    position: relative;
+}
+.completed-mark {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #4CAF50;
+    font-weight: bold;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resetButton = document.getElementById('reset-progress');
+    if (resetButton) {
+        resetButton.addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset your learning progress?')) {
+                fetch('/reset-progress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

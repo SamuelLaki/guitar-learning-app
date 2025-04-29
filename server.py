@@ -139,10 +139,16 @@ def inject_chords():
 
 @app.route('/')
 def homepage():
+    # Initialize completed_chords in session if not already there
+    if 'completed_chords' not in session:
+        session['completed_chords'] = []
     return render_template('homepage.html')
 
 @app.route('/learn')
 def learn():
+    # Initialize completed_chords in session if not already there
+    if 'completed_chords' not in session:
+        session['completed_chords'] = []
     return render_template('learn.html', chord_items=chord_items)
 
 @app.route('/quiz/start')
@@ -206,15 +212,32 @@ def chord_detail(chord_id):
     chord_item = next((item for item in chord_items if item["id"] == chord_id), None)
     if not chord_item:
         abort(404)
-    # Calculate progress
+    
+    # Initialize completed_chords in session if not already there
+    if 'completed_chords' not in session:
+        session['completed_chords'] = []
+    
+    # Mark this chord as completed/viewed
+    if chord_id not in session['completed_chords']:
+        session['completed_chords'].append(chord_id)
+        # Convert to list for modifiability then back to ensure session updates properly
+        completed_chords = list(session['completed_chords'])
+        session['completed_chords'] = completed_chords
+    
+    # Calculate progress based on completed chords
     total_chords = len(chord_items)
+    completed_count = len(session['completed_chords'])
+    percent_complete = round((completed_count / total_chords) * 100)
+    
+    # Get the current chord's position for navigation
     current_chord = next((i + 1 for i, c in enumerate(chord_items) if c["id"] == chord_id), 1)
-    percent_complete = round((current_chord / total_chords) * 100)
+    
     return render_template('chord_detail.html',
                            requested_chord=chord_item,
                            current_chord=current_chord,
                            total_chords=total_chords,
-                           percent_complete=percent_complete)
+                           percent_complete=percent_complete,
+                           completed_chords=session['completed_chords'])
 
 @app.route('/chord-reading-basics')
 def chord_reading_basics():
@@ -223,11 +246,29 @@ def chord_reading_basics():
 @app.route('/log-chord-access', methods=['POST'])
 def log_chord_access():
     data = request.get_json() or json.loads(request.data.decode('utf-8'))
-    log_msg = f"User {data['event']} {data['chord_name']} chord at {data['timestamp']}"
-    if 'duration' in data:
-        log_msg += f" (Time spent: {data['duration']})"
-    print(log_msg)
+    
+    # Only print log message if it's NOT a 'viewed' or 'completed' event
+    if data['event'] not in ['viewed', 'completed']:
+        log_msg = f"User {data['event']} {data['chord_name']} chord at {data['timestamp']}"
+        if 'duration' in data:
+            log_msg += f" (Time spent: {data['duration']})"
+        print(log_msg)
+    
+    # If this is a view or completion event, add the chord to completed chords
+    if data['event'] in ['viewed', 'completed']:
+        chord_id = next((c['id'] for c in chord_items if c['name'] == data['chord_name']), None)
+        if chord_id and 'completed_chords' in session and chord_id not in session['completed_chords']:
+            completed_chords = list(session['completed_chords'])
+            completed_chords.append(chord_id)
+            session['completed_chords'] = completed_chords
+    
     return jsonify({"status": "logged"}), 200
+
+@app.route('/reset-progress', methods=['POST'])
+def reset_progress():
+    """Reset user's completed chords progress"""
+    session['completed_chords'] = []
+    return jsonify({"status": "reset successful"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

@@ -6,7 +6,7 @@
   <!-- Animated, striped progress bar -->
   <div class="my-4">
     <div class="d-flex justify-content-between mb-1">
-      <span class="fw-semibold">Chord {{ current_chord }} of {{ total_chords }}</span>
+      <span class="fw-semibold">Completed {{ completed_chords|length }} of {{ total_chords }} chords</span>
       <span class="text-muted">{{ percent_complete }}%</span>
     </div>
     <div class="progress" role="progressbar"
@@ -28,6 +28,9 @@
               </svg>
           </button>
           <div class="chordName">{{ requested_chord.name }} CHORD</div>
+          <div class="badge {% if requested_chord.id in completed_chords %}bg-success{% else %}bg-secondary{% endif %} ms-2">
+              {% if requested_chord.id in completed_chords %}Completed{% else %}Not Started{% endif %}
+          </div>
       </div>
 
       <div id="audio-player-container" class="hidden-audio">
@@ -38,9 +41,9 @@
       </div>
 
       <div class="chord-image-wrapper">
-          <img src="{{ requested_chord.image }}" 
-               alt="{{ requested_chord.name }} chord diagram" 
-               class="chordImages img-fluid">            
+          <img src="{{ requested_chord.image }}"
+                alt="{{ requested_chord.name }} chord diagram"
+                class="chordImages img-fluid">
       </div>
 
       <div class="chord-nav-buttons">
@@ -63,10 +66,28 @@
       </div>
   </div>
 
-  <script src="{{ url_for('static', filename='audioPlayer.js') }}"></script>  
+  <script src="{{ url_for('static', filename='audioPlayer.js') }}"></script>
+  
   <script>
       const chordId = {{ requested_chord.id | tojson }};
       const chordName = {{ requested_chord.name | tojson }};
-  </script>  
-  <script src="{{ url_for('static', filename='chordTracker.js') }}"></script>  
+      
+    // Track that this chord was viewed
+    document.addEventListener('DOMContentLoaded', function() {
+        const timestamp = new Date().toISOString();
+        fetch('{{ url_for("log_chord_access") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chord_name: chordName,
+                event: 'viewed',
+                timestamp: timestamp
+            })
+        });
+    });
+  </script>
+  
+  <script src="{{ url_for('static', filename='chordTracker.js') }}"></script>
 {% endblock %}
