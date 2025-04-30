@@ -18,7 +18,7 @@ body {
     min-height: 0; /* Prevent flex item from overflowing */
 }
 
-.navigationBar {
+.navigationBar, .right-arrow-button {
     flex-shrink: 0; /* Prevent navbar from shrinking */
     /* ... existing navbar styles ... */
     background-color: #713b1cd3;
@@ -79,6 +79,7 @@ body {
     justify-content: center;
     gap: 20px;
     margin: 20px 0;
+    border: 1px #434141;
 }
 
 .chord-block, .action-button {
@@ -91,6 +92,7 @@ body {
     width: 80px;
     height: 80px;
     font-size: 24px;
+    background-color: #c8672ad0;
 }
 
 .chord-actions {
@@ -104,6 +106,7 @@ body {
 .action-button {
     padding: 10px 20px;
     font-size: 16px;
+    background-color: #c8672ad0;
 }
 
 .chord-detail-wrapper {
@@ -112,6 +115,7 @@ body {
 
 .chordName, .left-arrow-button {
     background-color: #c8672ad0;
+    font-weight: bold;
 }
 
 .chordName {
@@ -194,8 +198,6 @@ body {
     text-decoration: none;
     border-radius: 4px;
     transition: background-color 0.2s ease;
-    /* Ensure background color is applied */
-    background-color: #713b1cd3; 
 }
 
 .arrow-button:hover {
@@ -480,7 +482,7 @@ body {
 }
 
 .score-display {
-    background-color: #e0e0e0;
+    background-color: #c8672ad0;
     padding: 30px;
     border-radius: 8px;
     margin-bottom: 40px;
@@ -501,6 +503,10 @@ body {
 .results-actions .arrow-button {
     padding: 12px 24px;
     font-size: 18px;
+}
+
+.fingerNumberLegendTitle, .fingerNumberLegendDetails {
+    text-align: center;
 }
 
 /* Additional responsive adjustments */
