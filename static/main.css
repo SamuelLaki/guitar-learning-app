@@ -440,6 +440,10 @@ body {
     gap: 15px;
 }
 
+.navigation-buttons a {
+    text-decoration: none; /* Remove underline from links within nav buttons */
+}
+
 /* Style for the new study button */
 .study-button {
     text-decoration: none;

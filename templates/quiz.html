@@ -15,13 +15,15 @@
         </div>
         <!-- Quiz Progress Bar -->
         <div class="progress quiz-progress-bar" role="progressbar"
+             id="quiz-progress-bar-container" {# Added ID #}
              aria-label="Quiz progress"
              aria-valuenow="{{ quiz_percent_complete }}"
              aria-valuemin="0" aria-valuemax="100"
              style="height: 1rem;">
           <div class="progress-bar progress-bar-striped progress-bar-animated"
+               id="quiz-progress-bar-fill" {# Added ID #}
                style="width: {{ quiz_percent_complete }}%;">
-               {{ quiz_percent_complete }}%
+               <span id="quiz-progress-bar-text">{{ quiz_percent_complete }}%</span> {# Added ID #}
           </div>
         </div>
     </div>
@@ -67,6 +69,7 @@
      data-correct-answer="{{ quiz_data.chord.correctAnswer }}"
      data-current-page="{{ page_num }}"
      data-total-pages="{{ total_pages }}"
+     data-max-page-reached="{{ max_quiz_page_reached }}" {# Add max page reached #}
      style="display:none;">
 </div>
 
@@ -76,6 +79,7 @@
     var correctAnswer = quizDataElement.getAttribute('data-correct-answer');
     var currentPage = parseInt(quizDataElement.getAttribute('data-current-page'));
     var totalPages = parseInt(quizDataElement.getAttribute('data-total-pages'));
+    var maxPageReached = parseInt(quizDataElement.getAttribute('data-max-page-reached')); // Get max page
     
     // Track if the user has answered correctly
     var hasAnswered = false;
@@ -98,6 +102,11 @@
                 checkAnswer($(this).data('chord'), $(this));
             }
         });
+        
+        // Enable next button immediately if this page has already been passed
+        if (currentPage < maxPageReached) {
+            $('.next-btn').removeClass('disabled');
+        }
         
         // Handle next button
         $('.next-btn').click(function() {
@@ -195,6 +204,19 @@
                     }
                 }
                 
+                // --- Update Progress Bar --- 
+                // Calculate percentage based on completing the *current* page
+                let newPercent = Math.round((currentPage / totalPages) * 100);
+                let currentPercentOnBar = parseInt($('#quiz-progress-bar-text').text().replace('%','')) || 0;
+
+                // Only update if this answer progresses the bar further
+                if (newPercent > currentPercentOnBar) {
+                    $('#quiz-progress-bar-fill').css('width', newPercent + '%');
+                    $('#quiz-progress-bar-text').text(newPercent + '%');
+                    $('#quiz-progress-bar-container').attr('aria-valuenow', newPercent);
+                }
+                // --- End Update Progress Bar ---
+
                 // Enable the next button
                 $('.next-btn').removeClass('disabled');
             },
