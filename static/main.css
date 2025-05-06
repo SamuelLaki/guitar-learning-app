@@ -448,6 +448,13 @@ body {
     box-shadow: 0 0 10px rgba(196, 60, 60, 0.5);
 }
 
+/* Style for the temporary checking state */
+.chord-option.checking .chord-name {
+    background-color: #e9ecef; /* A neutral grey background */
+    border-color: #adb5bd;
+    box-shadow: 0 0 8px rgba(108, 117, 125, 0.3);
+}
+
 .correct-match {
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.7) !important;
     border-color: #7fb718 !important;
