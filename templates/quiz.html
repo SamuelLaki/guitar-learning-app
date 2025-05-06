@@ -158,14 +158,28 @@
                 e.preventDefault();
                 this.classList.remove('drag-over');
                 
-                var chordName = $(this).data('chord');
-                checkAnswer(chordName, $(this));
+                var targetOptionElement = $(this);
+                var chordName = targetOptionElement.data('chord');
+                
+                // --- Immediate Feedback --- 
+                if (!hasAnswered) { 
+                    hasAnswered = true; // Prevent further drops immediately
+                    targetOptionElement.addClass('checking'); // Add temporary style
+                    showFeedback('info', 'Checking...'); // Show interim message
+                    // Disable further dragging visually (optional, but good UX)
+                    chordDiagram.setAttribute('draggable', 'false');
+                    chordDiagram.style.cursor = 'default';
+                    // --- End Immediate Feedback ---
+                    
+                    checkAnswer(chordName, targetOptionElement);
+                }
             });
         });
     }
     
     function checkAnswer(selectedAnswer, optionElement) {
-        if (hasAnswered) return; // Prevent multiple checks
+        // Remove the initial check here, as we set hasAnswered immediately on drop
+        // if (hasAnswered) return; 
 
         // Submit the answer to the server
         $.ajax({
@@ -177,7 +191,8 @@
                 correct_answer: correctAnswer
             }),
             success: function(response) {
-                hasAnswered = true; // Set answered flag
+                // hasAnswered is already true
+                optionElement.removeClass('checking'); // Remove temporary style
                 
                 // Clear previous feedback message and hide button initially
                 feedbackDiv.hide();
@@ -195,12 +210,13 @@
                     if (correctOptionElement) { 
                         correctOptionElement.addClass('correct'); // Show the correct one
                     }
-                    showFeedback('error', 'Not quite!');
+                    showFeedback('error', 'Not quite!'); // Show "Not quite!" message
                     
                     // Show the Study Chord button if we have the ID
                     if (response.correct_chord_id) {
                         var studyUrl = "/learn/" + response.correct_chord_id;
-                        $('#study-chord-btn').attr('href', studyUrl).fadeIn();
+                        // Show button directly instead of fading
+                        $('#study-chord-btn').attr('href', studyUrl).show(); 
                     }
                 }
                 
@@ -221,9 +237,14 @@
                 $('.next-btn').removeClass('disabled');
             },
             error: function() {
-                 // Handle potential AJAX errors
-                 showFeedback('error', 'Could not check answer. Please try again.');
-                 hasAnswered = false; // Allow retry if AJAX failed
+                optionElement.removeClass('checking'); // Remove temporary style on error too
+                // Handle potential AJAX errors
+                showFeedback('error', 'Could not check answer. Please try again or refresh the page.');
+                // Do NOT reset hasAnswered here, as it allows re-submission in an inconsistent state.
+                // hasAnswered = false; 
+                // Re-enable dragging ONLY if submit fails? Maybe not ideal.
+                // chordDiagram.setAttribute('draggable', 'true');
+                // chordDiagram.style.cursor = 'move';
             }
         });
     }
@@ -241,7 +262,8 @@
             return; // Unknown type
         }
         
-        feedbackDiv.addClass(className).html(message).fadeIn();
+        // Show directly instead of fading
+        feedbackDiv.addClass(className).html(message).show(); 
     }
 </script>
 {% endblock %}

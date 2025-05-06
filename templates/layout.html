@@ -15,18 +15,19 @@
     <div class="content-wrapper">
         <nav class="navbar navbar-expand-lg navbar-light navigationBar">
             <div class="container-fluid">
-                <strong><a class="navbar-brand" href="{{ url_for('homepage') }}">Home</a></strong>
-        
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
         
-                <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                     <ul class="navbar-nav">
+                        <li class="nav-item">
+                             <a class="nav-link {% if active_page == 'home' %}active-nav{% endif %}" href="{{ url_for('homepage') }}">Home</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <!-- main link (still works if JS fails) -->
-                            <a class="nav-link dropdown-toggle" href="{{ url_for('learn') }}"
+                            <a class="nav-link dropdown-toggle {% if active_page == 'learn' %}active-nav{% endif %}" href="{{ url_for('learn') }}"
                                id="learnDropdown" role="button">
                               Learn
                             </a>
@@ -45,7 +46,7 @@
                               <li><hr class="dropdown-divider"></li>
                           
                               <li><a class="dropdown-item" href="{{ url_for('learn') }}">
-                                  All chords / Grid view</a></li>
+                                  All chords</a></li>
                               <li><a class="dropdown-item" href="{{ url_for('chord_reading_basics') }}">
                                   Chord Reading Basics</a></li>
                             </ul>
@@ -53,7 +54,7 @@
                           
 
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('start_quiz') }}">Quiz</a>
+                            <a class="nav-link {% if active_page == 'quiz' %}active-nav{% endif %}" href="{{ url_for('start_quiz') }}">Quiz</a>
                         </li>
                     </ul>
                 </div>
