@@ -2,9 +2,11 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session, abort, json
 import random  # Import the random module
 from datetime import datetime
+import os # Import os module
 
 app = Flask(__name__)
-app.secret_key = 'guitar_chord_quiz_key'  # Secret key for session management
+# Load secret key from environment variable or use a default (change default for production!)
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default-dev-key-change-me')
 
 chord_items = [
     {
@@ -138,19 +140,21 @@ quiz_data = [
 def inject_chords():
     return dict(chord_items=chord_items)
 
-@app.route('/')
-def homepage():
-    # Initialize completed_chords in session if not already there
+@app.before_request
+def initialize_session():
+    # Initialize completed_chords in session if not already there before each request
     if 'completed_chords' not in session:
         session['completed_chords'] = []
-    return render_template('homepage.html')
+
+@app.route('/')
+def homepage():
+    # 'completed_chords' is now initialized by before_request
+    return render_template('homepage.html', active_page='home')
 
 @app.route('/learn')
 def learn():
-    # Initialize completed_chords in session if not already there
-    if 'completed_chords' not in session:
-        session['completed_chords'] = []
-    return render_template('learn.html', chord_items=chord_items)
+    # 'completed_chords' is now initialized by before_request
+    return render_template('learn.html', chord_items=chord_items, active_page='learn')
 
 @app.route('/quiz/start')
 def start_quiz():
@@ -164,10 +168,13 @@ def start_quiz():
         return redirect(url_for('quiz_page', page_num=last_page))
     else:
         # Start fresh: Reset score, last page, and max page reached
-        session['quiz_score'] = 0
+        session['quiz_score'] = 0 # Keep for now, calculate final from answers
         session['last_quiz_page'] = 1 # Start at page 1
         session['current_page'] = 1 # Ensure current_page is also reset
         session['max_quiz_page_reached'] = 1 # Initialize max page reached
+        session['quiz_shuffled_options'] = {} # Initialize storage for shuffled options
+        session['quiz_answers'] = {} # Initialize storage for user answers
+        session.modified = True # Ensure the new dicts are saved
         return redirect(url_for('quiz_page', page_num=1))
 
 @app.route('/quiz/<int:page_num>')
@@ -176,14 +183,31 @@ def quiz_page(page_num):
     if not page_data_original:
         session.pop('last_quiz_page', None)
         session.pop('max_quiz_page_reached', None) # Clear max page on invalid access
+        session.pop('quiz_shuffled_options', None) # Clear shuffled options on invalid access
         if page_num > len(quiz_data):
              return redirect(url_for('quiz_results'))
         else:
              return redirect(url_for('start_quiz'))
 
+    # Ensure quiz_shuffled_options exists in session
+    if 'quiz_shuffled_options' not in session:
+        session['quiz_shuffled_options'] = {}
+        session.modified = True
+
     page_data = page_data_original.copy()
-    page_data['options'] = page_data['options'][:]
-    random.shuffle(page_data['options'])
+
+    # Check if options for this page were already shuffled and stored
+    shuffled_options_map = session.get('quiz_shuffled_options', {})
+    if str(page_num) in shuffled_options_map: # Use string key for JSON compatibility
+        page_data['options'] = shuffled_options_map[str(page_num)]
+    else:
+        # Shuffle options only if not already done for this session/attempt
+        current_options = page_data['options'][:] # Create a copy
+        random.shuffle(current_options)
+        page_data['options'] = current_options
+        # Store the shuffled options
+        session['quiz_shuffled_options'][str(page_num)] = current_options
+        session.modified = True
 
     # Store the current page number for potential resume
     session['last_quiz_page'] = page_num
@@ -203,7 +227,8 @@ def quiz_page(page_num):
     total_pages = len(quiz_data)
     # Calculate percentage based on pages *before* the current one for initial display
     # (Progress reflects completed questions)
-    quiz_percent_complete = round(((page_num - 1) / total_pages) * 100) if total_pages > 0 and page_num > 1 else 0
+    # Updated to use max_reached to prevent progress bar decrease on back navigation
+    quiz_percent_complete = round(((max_reached - 1) / total_pages) * 100) if total_pages > 0 and max_reached > 1 else 0
 
     return render_template('quiz.html',
                            page_num=page_num,
@@ -211,22 +236,43 @@ def quiz_page(page_num):
                            chord_items=chord_items,
                            total_pages=total_pages,
                            quiz_percent_complete=quiz_percent_complete,
-                           max_quiz_page_reached=max_reached) # Pass max_reached to template
+                           max_quiz_page_reached=max_reached,
+                           active_page='quiz') # Pass active page indicator
 
 @app.route('/quiz/submit_answer', methods=['POST'])
 def submit_answer():
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid request"}), 400
+
     user_answer = data.get('answer')
     correct_answer = data.get('correct_answer')
-    current_page = session.get('current_page', 1)
+    current_page = session.get('current_page')
+
+    if user_answer is None or correct_answer is None or current_page is None:
+        return jsonify({"error": "Missing data in request or session"}), 400
+
     is_correct = (user_answer == correct_answer)
     correct_chord_id = None
-    if is_correct:
-        session['quiz_score'] = session.get('quiz_score', 0) + 1
-    else:
+
+    # Store the answer details instead of just incrementing score
+    if 'quiz_answers' not in session:
+        session['quiz_answers'] = {}
+
+    session['quiz_answers'][str(current_page)] = {
+        'user_answer': user_answer,
+        'correct_answer': correct_answer,
+        'is_correct': is_correct
+    }
+
+    if not is_correct:
+        # Find the ID of the correct chord if the answer was wrong
         correct_chord_item = next((item for item in chord_items if item["name"] == correct_answer), None)
         if correct_chord_item:
             correct_chord_id = correct_chord_item["id"]
+
+    session.modified = True # Ensure answer is saved
+
     result = {
         'correct': is_correct,
         'next_page': current_page + 1 if current_page < len(quiz_data) else 'results',
@@ -236,32 +282,76 @@ def submit_answer():
 
 @app.route('/quiz/results')
 def quiz_results():
-    score = session.get('quiz_score', 0)
-    total = len(quiz_data)
-    # Clear all quiz-related session data
+    # Get the stored answers, default to empty dict if not found
+    quiz_answers = session.get('quiz_answers', {})
+    total_questions_in_quiz = len(quiz_data)
+
+    # Calculate score from the stored answers
+    score = sum(1 for answer in quiz_answers.values() if answer.get('is_correct'))
+
+    # Prepare data for the template, including ALL quiz questions and their status
+    quiz_review_data = []
+    for question_data in quiz_data:
+        page_num = question_data["page"]
+        page_num_str = str(page_num)
+        chord_id = question_data["chord"]["chord_id"]
+        correct_answer_name = question_data["chord"]["correctAnswer"]
+        
+        # Find the corresponding chord details (name, image)
+        chord_info = next((c for c in chord_items if c["id"] == chord_id), None)
+        if not chord_info:
+            # Handle case where chord_id might be invalid (though unlikely)
+            continue 
+            
+        # Check if this question was answered
+        answer_details = quiz_answers.get(page_num_str)
+        
+        status = 'unanswered' # Default status
+        user_answer = None
+        is_correct = None
+        if answer_details:
+            is_correct = answer_details.get('is_correct')
+            user_answer = answer_details.get('user_answer')
+            status = 'correct' if is_correct else 'incorrect'
+            
+        quiz_review_data.append({
+            'page': page_num,
+            'chord_id': chord_id,
+            'chord_name': chord_info['name'],
+            'chord_image': chord_info['image'],
+            'status': status, # 'correct', 'incorrect', or 'unanswered'
+            'user_answer': user_answer,
+            'correct_answer': correct_answer_name, 
+        })
+
+    # Clear all quiz-related session data *after* retrieving needed info
     session.pop('last_quiz_page', None)
-    session.pop('quiz_score', None)
+    session.pop('quiz_score', None) # Remove old score tracking
     session.pop('current_page', None)
-    session.pop('max_quiz_page_reached', None) # Clear max page reached
-    return render_template('quiz_results.html', score=score, total=total)
+    session.pop('max_quiz_page_reached', None)
+    session.pop('quiz_shuffled_options', None)
+    session.pop('quiz_answers', None) # Clear the stored answers
+
+    return render_template('quiz_results.html', 
+                           score=score, 
+                           total=total_questions_in_quiz, 
+                           quiz_review_data=quiz_review_data,
+                           active_page='quiz') # Pass active page indicator
 
 @app.route('/learn/<int:chord_id>')
 def chord_detail(chord_id):
     chord_item = next((item for item in chord_items if item["id"] == chord_id), None)
     if not chord_item:
         abort(404)
-    
-    # Initialize completed_chords in session if not already there
-    if 'completed_chords' not in session:
-        session['completed_chords'] = []
-    
+
+    # 'completed_chords' is guaranteed to exist by before_request
+
     # Mark this chord as completed/viewed
     if chord_id not in session['completed_chords']:
         session['completed_chords'].append(chord_id)
-        # Convert to list for modifiability then back to ensure session updates properly
-        completed_chords = list(session['completed_chords'])
-        session['completed_chords'] = completed_chords
-    
+        # Make sure Flask detects the change to the mutable list
+        session.modified = True
+
     # Calculate progress based on completed chords
     total_chords = len(chord_items)
     completed_count = len(session['completed_chords'])
@@ -275,11 +365,12 @@ def chord_detail(chord_id):
                            current_chord=current_chord,
                            total_chords=total_chords,
                            percent_complete=percent_complete,
-                           completed_chords=session['completed_chords'])
+                           completed_chords=session['completed_chords'],
+                           active_page='learn') # Pass active page indicator
 
 @app.route('/chord-reading-basics')
 def chord_reading_basics():
-    return render_template('chord_reading_basics.html')
+    return render_template('chord_reading_basics.html', active_page='learn') # Consider this part of 'learn'
 
 @app.route('/log-chord-access', methods=['POST'])
 def log_chord_access():
@@ -295,18 +386,21 @@ def log_chord_access():
     # If this is a view or completion event, add the chord to completed chords
     if data['event'] in ['viewed', 'completed']:
         chord_id = next((c['id'] for c in chord_items if c['name'] == data['chord_name']), None)
-        if chord_id and 'completed_chords' in session and chord_id not in session['completed_chords']:
-            completed_chords = list(session['completed_chords'])
-            completed_chords.append(chord_id)
-            session['completed_chords'] = completed_chords
+        # Check existence of 'completed_chords' (guaranteed by before_request)
+        if chord_id and chord_id not in session['completed_chords']:
+            session['completed_chords'].append(chord_id)
+            # Make sure Flask detects the change to the mutable list
+            session.modified = True
     
     return jsonify({"status": "logged"}), 200
 
 @app.route('/reset-progress', methods=['POST'])
 def reset_progress():
-    """Reset user's completed chords progress"""
-    session['completed_chords'] = []
+    """Reset user's progress by clearing the entire session."""
+    session.clear()
     return jsonify({"status": "reset successful"}), 200
 
 if __name__ == '__main__':
+    # For production, set the FLASK_SECRET_KEY environment variable
+    # and potentially turn off debug mode.
     app.run(debug=True, port=5001)

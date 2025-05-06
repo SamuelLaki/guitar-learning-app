@@ -8,18 +8,36 @@
         <h2>You scored a {{ score }}/{{ total }}!</h2>
     </div>
     
+    <!-- New Review Grid -->
+    {% if quiz_review_data %}
+    <div class="quiz-review-grid-container">
+        <h3>Quiz Review:</h3>
+        <div class="chord-grid quiz-review-grid">
+            {% for item in quiz_review_data %}
+                <div class="chord-block review-block status-{{ item.status }}">
+                    <img src="{{ item.chord_image }}" alt="{{ item.chord_name }} diagram" class="review-grid-image">
+                    <div class="review-grid-name">{{ item.chord_name }}</div>
+                    <div class="review-grid-status">
+                        {% if item.status == 'correct' %}
+                            <span class="correct-mark">✔️ Correct</span>
+                        {% elif item.status == 'incorrect' %}
+                            <span class="incorrect-mark">❌ Incorrect</span><br>
+                            <span class="review-grid-details">(You: {{ item.user_answer }})</span>
+                        {% else %}
+                            <span class="unanswered-mark">? Unanswered</span> {# Should not happen with current logic #}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    <!-- End New Review Grid -->
+
     <div class="results-actions">
-        <a href="{{ url_for('homepage') }}" class="home-button">
-            <div class="arrow-button">Go Home</div>
-        </a>
-        
-        <a href="{{ url_for('start_quiz') }}" class="retry-button">
-            <div class="arrow-button">Try Again</div>
-        </a>
-        
-        <a href="{{ url_for('learn') }}" class="learn-button">
-            <div class="arrow-button">Continue Learning</div>
-        </a>
+        <a href="{{ url_for('homepage') }}" class="btn-results btn-secondary">Go Home</a>
+        <a href="{{ url_for('start_quiz') }}" class="btn-results btn-primary">Try Again</a>
+        <a href="{{ url_for('learn') }}" class="btn-results btn-secondary">Continue Learning</a>
     </div>
 </div>
 {% endblock %} 

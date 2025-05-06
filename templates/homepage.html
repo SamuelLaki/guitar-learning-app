@@ -3,13 +3,21 @@
 {% block title %}Basic guitar chords{% endblock %}
 
 {% block content %}
-    <div class="titleHomepage"><strong>Learn the basic guitar chords</strong></div>
-    <img src="https://github.com/SarahNasser576/Sarah_Tesfalem_Samuel_UI-Design_Final-Project/blob/main/images/Guitar_Playing_1.jpg?raw=true" 
-        alt="Close up of person playing guitar" 
-        class="homepageImg img-fluid">
+<div class="homepage-container text-center"> 
+    <h1 class="homepage-title">Learn Basic Guitar Chords</h1>
     
-    <!-- Add Go to Learn button -->
-    <div class="text-center mt-4 mb-4"> {# Center the button and add margin #}
-        <a href="{{ url_for('learn') }}" class="btn btn-primary btn-lg action-button">Go to Learn</a> {# Styled button linking to learn page #}
+    <div class="homepage-image-wrapper">
+        <img src="{{ url_for('static', filename='images/Guitar_Playing.jpg') }}" 
+             alt="Close up of person playing guitar" 
+             class="homepage-image img-fluid">
     </div>
+    
+    <div class="homepage-intro">
+        <p class="homepage-subtitle">Master the essential chords quickly and easily with interactive lessons and quizzes.</p>
+        <div class="homepage-actions">
+            <a href="{{ url_for('learn') }}" class="btn-home btn-primary">Start Learning</a>
+            <a href="{{ url_for('start_quiz') }}" class="btn-home btn-secondary">Take the Quiz</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

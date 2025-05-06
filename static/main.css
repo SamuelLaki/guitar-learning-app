@@ -20,8 +20,9 @@ body {
 
 .navigationBar, .right-arrow-button {
     flex-shrink: 0; /* Prevent navbar from shrinking */
-    /* ... existing navbar styles ... */
-    background-color: #713b1cd3;
+    background-color: #713b1cd3; /* Restored original background color */
+    padding-top: 12px !important; /* Keep increased padding */
+    padding-bottom: 12px !important; /* Keep increased padding */
 }
 
 .main-content-area {
@@ -41,13 +42,27 @@ body {
     margin-right: 10px;
 }
 
+.navbar-nav .nav-item {
+    margin-left: 10px; /* Add space between nav items */
+    margin-right: 10px; /* Add space between nav items */
+}
+
 .navbar-nav .nav-item .nav-link {
-    font-size: 1rem !important;
-    padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x) !important;
+    font-size: 30px !important; /* Made font size much larger */
+    padding-top: 8px !important; /* Adjusted padding */
+    padding-bottom: 8px !important; /* Adjusted padding */
+    padding-left: 15px !important; /* Adjusted padding */
+    padding-right: 15px !important; /* Adjusted padding */
     line-height: var(--bs-body-line-height) !important;
     display: flex;
     align-items: center;
-    padding-left: 1rem !important;
+}
+
+/* Style for active navigation link */
+.navbar-nav .nav-link.active-nav {
+    font-weight: 700 !important; /* Use a specific bold weight */
+    /* Optionally add other styling like a subtle underline or color change */
+    /* color: #some-active-color !important; */
 }
 
 .titleHomepage {
@@ -67,19 +82,21 @@ body {
 .selectChordText {
     text-align: center;
     color: rgba(0, 0, 0, 0.659);
+    font-size: 1.5rem; /* Reduced size */
+    margin-bottom: 15px; /* Reduced margin */
 }
 
 .chord-container {
     text-align: center;
-    padding-top: 40px;
+    padding-top: 25px; /* Reduced padding */
 }
 
 .chord-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
+    gap: 15px; /* Reduced gap */
+    margin: 15px 0; /* Reduced margin */
     border: 1px #434141;
 }
 
@@ -91,14 +108,14 @@ body {
 }
 
 .chord-block {
-    width: 120px;
-    height: 120px;
-    font-size: 40px;
+    width: 100px; /* Reduced size */
+    height: 100px; /* Reduced size */
+    font-size: 32px; /* Reduced size */
     background-color: #c8672ad0;
 }
 
 .chord-actions {
-    margin-top: 30px;
+    margin-top: 25px; /* Reduced margin */
     display: flex;
     justify-content: center;
     gap: 15px;
@@ -106,8 +123,8 @@ body {
 }
 
 .action-button {
-    padding: 20px 30px;
-    font-size: 25px;
+    padding: 15px 25px; /* Reduced padding */
+    font-size: 20px; /* Reduced size */
     background-color: #c8672ad0;
 }
 
@@ -121,48 +138,48 @@ body {
 }
 
 .chordName {
-    width: 450px;
+    width: 350px;
     text-align: center;
     margin: auto;
     border: 1px solid black;
-    font-size: 40px;
+    font-size: 32px;
 }
 
 .chord-header-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin: 30px 0 10px 20px;
+    gap: 10px;
+    margin: 35px 0 8px 15px; /* Increased top margin for more space */
 }
 
 .chordImages {
     width: 100%;
-    max-height: calc(75vh - 160px); /* Further reduced max height */
+    max-height: calc(65vh - 150px);
     display: block;
     margin-left: auto;
     margin-right: auto;
     object-fit: contain;
-    padding-top: 10px; /* Reduced padding */
+    padding-top: 5px;
 }
 
 .audio-player-section {
     display: flex;
     align-items: center;
-    gap: 20px;
-    margin: 20px 0 0 20px;
+    gap: 15px;
+    margin: 15px 0 0 15px;
 }
 
 .audio-button {
     background-color: #f2f2f2;
     border: none;
     border-radius: 50%;
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
     transition: background-color 0.2s ease;
 }
 
@@ -181,25 +198,26 @@ body {
 .chord-image-wrapper {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 .chord-nav-buttons {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 30px 40px 0 40px;
+    margin: 25px 30px 0 30px;
 }
   
 .left-arrow-button, .right-arrow-button {
     position: relative;
     border: 2px solid #000;
     color: #000;
-    padding: 8px 16px;
+    padding: 10px 18px;
     font-weight: bold;
     text-decoration: none;
     border-radius: 4px;
     transition: background-color 0.2s ease;
+    font-size: 18px;
 }
 
 .arrow-button:hover {
@@ -249,15 +267,15 @@ body {
 
 .quiz-title {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* Reduced margin */
     border: 1px solid #ccc;
-    padding: 15px;
+    padding: 12px; /* Reduced padding */
     background-color: #f8f8f8;
 }
 
 .quiz-title h2 {
-    margin: 0 0 10px 0;
-    font-size: 28px;
+    margin: 0 0 8px 0; /* Adjusted margin */
+    font-size: 30px; /* Reduced size */
 }
 
 .quiz-progress {
@@ -268,22 +286,23 @@ body {
 
 /* Renamed original quiz-progress to avoid conflict */
 .quiz-progress-text {
-    font-size: 16px;
+    font-size: 18px; /* Reduced size */
     color: #666;
-    margin-bottom: 5px; /* Add some space below the text */
+    margin-bottom: 6px; /* Reduced margin */
 }
 
 /* Style for the new quiz progress bar */
 .quiz-progress-bar {
-    margin-top: 5px; /* Add space above the bar */
-    margin-bottom: 15px; /* Add space below the bar */
-    height: 1rem; /* Consistent height */
+    margin-top: 6px; /* Reduced margin */
+    margin-bottom: 10px; /* Reduced margin */
+    height: 1rem; /* Reduced height */
 }
 
 /* Feedback styles */
 .feedback-container {
-    margin: 10px 0;
+    margin: 10px 0; /* Reduced vertical margin */
     padding: 0 10px;
+    min-height: 35px; /* Reduced min-height */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -292,10 +311,11 @@ body {
 }
 
 #feedback-message {
-    padding: 10px 15px;
+    padding: 8px 12px; /* Reduced padding */
     border-radius: 5px;
     font-weight: bold;
     border: 1px solid;
+    font-size: 15px; /* Reduced size */
 }
 
 .success-message {
@@ -322,7 +342,7 @@ body {
     flex: 1;
     justify-content: space-between;
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* Reduced space before nav buttons */
 }
 
 .chord-diagram-container {
@@ -338,6 +358,7 @@ body {
     height: 180px;
     border: 2px solid #ccc;
     padding: 10px;
+    padding-bottom: 35px; /* Increased bottom padding */
     border-radius: 5px;
     background-color: #f9f9f9;
     margin: 0 auto;
@@ -352,11 +373,11 @@ body {
 
 .drag-hint {
     position: absolute;
-    bottom: -25px;
+    bottom: 6px; /* Adjusted position */
     left: 0;
     right: 0;
     text-align: center;
-    font-size: 13px;
+    font-size: 14px; /* Reduced size */
     color: #666;
     font-style: italic;
 }
@@ -368,8 +389,8 @@ body {
 }
 
 .chord-options-container {
-    margin-top: 50px;
-    padding-bottom: 40px;
+    margin-top: 40px; /* Reduced space below diagram */
+    padding-bottom: 30px; /* Reduced padding */
 }
 
 .chord-options {
@@ -408,7 +429,7 @@ body {
     height: 100%;
     border: 2px solid #000;
     background-color: #f8f8f8;
-    font-size: 32px;
+    font-size: 40px; /* Reduced size */
     font-weight: bold;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -437,7 +458,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
-    padding: 15px 20px;
+    padding: 10px 15px; /* Reduced padding */
     position: sticky;
     bottom: 0;
     z-index: 50;
@@ -457,8 +478,8 @@ body {
     background-color: #ffc107;
     border-color: #e0a800;
     color: #333;
-    padding: 6px 12px;
-    font-size: 14px;
+    padding: 8px 14px; /* Adjusted padding */
+    font-size: 15px; /* Increased size */
 }
 
 .study-button .arrow-button:hover {
@@ -477,34 +498,72 @@ body {
 
 /* Quiz results page */
 .quiz-results-container {
-    max-width: 800px;
+    max-width: 900px; 
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 20px 20px; /* Reduced vertical padding */
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    /* Removed height: 100% to allow natural height based on content */
 }
 
 .score-display {
     background-color: #c8672ad0;
-    padding: 30px;
+    padding: 15px; /* Reduced padding */
     border-radius: 8px;
-    margin-bottom: 40px;
+    margin-bottom: 20px; /* Reduced margin */
+    flex-shrink: 0; 
 }
 
 .score-display h2 {
-    font-size: 36px;
+    font-size: 28px; /* Reduced font size */
     margin: 0;
 }
 
 .results-actions {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 15px; /* Reduced gap */
     flex-wrap: wrap;
+    margin-top: 20px; /* Reduced spacing */
+    flex-shrink: 0; 
 }
 
-.results-actions .arrow-button {
-    padding: 12px 24px;
-    font-size: 18px;
+/* New Button Styles */
+.btn-results {
+    display: inline-block;
+    padding: 8px 20px; /* Reduced padding */
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px; /* Reduced size */
+    border: 2px solid transparent;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-results.btn-primary {
+    background-color: #c8672a; /* Primary color */
+    color: white;
+    border-color: #c8672a;
+}
+
+.btn-results.btn-primary:hover {
+    background-color: #a15322; /* Darker shade */
+    border-color: #a15322;
+}
+
+.btn-results.btn-secondary {
+    background-color: transparent;
+    color: #c8672a; /* Primary color text */
+    border-color: #c8672a; /* Primary color border */
+}
+
+.btn-results.btn-secondary:hover {
+    background-color: #fbeee4; /* Light primary background on hover */
+    color: #a15322;
+    border-color: #a15322;
 }
 
 .fingerNumberLegendTitle, .fingerNumberLegendDetails {
@@ -512,15 +571,16 @@ body {
 }
 
 .learning-progress {
-    margin: 20px 0;
+    margin: 15px 0; /* Reduced margin */
 }
 .progress-text {
     text-align: center;
     margin-bottom: 5px;
     font-weight: bold;
+    font-size: 0.95rem; /* Reduced size */
 }
 .progress-bar-container {
-    height: 20px;
+    height: 18px; /* Slightly reduced height */
     background-color: #e0e0e0;
     border-radius: 10px;
     overflow: hidden;
@@ -533,14 +593,15 @@ body {
 .reset-container {
     text-align: right;
     margin-bottom: 10px;
+    padding-right: 15px; /* Added padding for alignment */
 }
 .reset-button {
     background-color: transparent;
     border: 1px solid #ccc;
     border-radius: 5px;
-    padding: 5px 10px;
+    padding: 4px 8px; /* Reduced padding */
     cursor: pointer;
-    font-size: 0.8em;
+    font-size: 0.75em; /* Reduced size */
 }
 .completed-chord {
     background-color: #e8f5e9;
@@ -633,3 +694,185 @@ body {
   .dropdown-toggle::after {
     display: none;
   }
+
+/* Styles for the new Quiz Review Grid */
+.quiz-review-grid-container {
+    margin-top: 20px; /* Reduced margin */
+    padding: 0 10px;
+    text-align: left;
+}
+
+.quiz-review-grid-container h3 {
+    text-align: center;
+    margin-bottom: 15px; /* Reduced margin */
+    font-size: 20px; /* Reduced size */
+}
+
+.quiz-review-grid {
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 20px; /* Reduced gap */
+    padding-bottom: 10px;
+}
+
+.review-block {
+    width: 150px; /* Reduced width */
+    min-height: 190px; /* Reduced min-height */
+    padding: 10px; /* Reduced padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: default;
+}
+
+.review-grid-image {
+    width: 85px; /* Reduced size */
+    height: 85px; /* Reduced size */
+    object-fit: contain;
+    margin-bottom: 10px; /* Adjusted margin */
+}
+
+.review-grid-name {
+    font-weight: bold;
+    font-size: 16px; /* Reduced size */
+    margin-bottom: 8px; /* Adjusted margin */
+    color: #333; 
+}
+
+.review-grid-status {
+    font-size: 14px; /* Reduced size */
+    line-height: 1.3; /* Adjusted line height */
+}
+
+.review-grid-details {
+    font-size: 12px; /* Reduced size */
+    color: #555;
+    margin-top: 2px; /* Adjusted margin */
+}
+
+/* Status-specific styles */
+.review-block.status-correct {
+    border-color: #4CAF50;
+    background-color: #e8f5e9;
+}
+
+.review-block.status-incorrect {
+    border-color: #f44336;
+    background-color: #ffebee;
+}
+
+.review-block.status-unanswered { /* Style for unanswered (if needed) */
+    border-color: #9e9e9e;
+    background-color: #f5f5f5;
+    opacity: 0.8;
+}
+
+.correct-mark,
+.incorrect-mark,
+.unanswered-mark { 
+    font-size: 1em; /* Keep base size emphasis */
+}
+
+/* New Homepage Styles */
+.homepage-container {
+    padding: 25px 20px; /* Reduced vertical padding */
+    max-width: 900px; 
+    margin: 0 auto; 
+}
+
+.homepage-title {
+    font-size: 2.5rem; /* Significantly reduced size */
+    font-weight: 700; 
+    margin-bottom: 20px; /* Reduced space below title */
+    color: #333;
+    letter-spacing: -0.5px; 
+    line-height: 1.2; 
+}
+
+.homepage-image-wrapper {
+    margin-bottom: 25px; /* Reduced space below image */
+}
+
+.homepage-image {
+    max-width: 100%; 
+    height: auto;
+    max-height: 40vh; /* Significantly reduced max image height */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Adjusted shadow */
+    display: inline-block; 
+}
+
+.homepage-intro {
+    max-width: 600px; /* Slightly reduced width limit */
+    margin: 0 auto; 
+}
+
+.homepage-subtitle {
+    font-size: 1.1rem; /* Reduced size */
+    color: #555;
+    margin-bottom: 30px; /* Reduced space below subtitle */
+    line-height: 1.5; /* Slightly adjusted line height */
+    font-weight: 400; 
+}
+
+.homepage-actions {
+    display: flex;
+    justify-content: center; 
+    gap: 25px; /* Adjusted space BETWEEN buttons */
+    flex-wrap: wrap;
+}
+
+.btn-home {
+    display: inline-block;
+    padding: 10px 30px; /* Adjusted padding */
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.05rem; /* Reduced button text */
+    border: 2px solid transparent;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-home:hover {
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.btn-home.btn-primary {
+    background-color: #c8672a; /* Primary color */
+    color: white;
+    border-color: #c8672a;
+}
+
+.btn-home.btn-primary:hover {
+    background-color: #a15322; /* Darker shade */
+    border-color: #a15322;
+}
+
+.btn-home.btn-secondary {
+    background-color: transparent;
+    color: #c8672a; /* Primary color text */
+    border-color: #c8672a; /* Primary color border */
+}
+
+.btn-home.btn-secondary:hover {
+    background-color: #fbeee4; /* Light primary background on hover */
+    color: #a15322;
+    border-color: #a15322;
+}
+
+/* Reduce spacing for progress bar on learn/detail pages */
+.my-4 {
+    margin-top: 1.0rem !important;
+    margin-bottom: 1.0rem !important;
+}
+.progress {
+    height: 1.2rem !important;
+}
