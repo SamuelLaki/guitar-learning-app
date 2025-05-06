@@ -368,6 +368,10 @@ def chord_detail(chord_id):
                            completed_chords=session['completed_chords'],
                            active_page='learn') # Pass active page indicator
 
+@app.route('/about')
+def about():
+    return render_template('about.html', active_page='about')
+
 @app.route('/chord-reading-basics')
 def chord_reading_basics():
     return render_template('chord_reading_basics.html', active_page='learn') # Consider this part of 'learn'
