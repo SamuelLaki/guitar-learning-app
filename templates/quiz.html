@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Quiz – Match Chords{% endblock %}
+{% block title %}Quiz – Match Chords{% endblock %}
 
 {% block content %}
 <!-- jQuery‑UI (for drag / drop feedback) -->
@@ -9,17 +9,17 @@
 
 <div class="quiz-container">
 
-  <!-- ─── TITLE + GLOBAL PROGRESS ───────────────────────── -->
+  <!-- ─── TITLE + GLOBAL PROGRESS ───────────────────────── -->
   <div class="quiz-title">
       <h2>Match the chord to its name</h2>
       <div class="quiz-progress-text">
-          Question {{ page_num }} of {{ total_pages }}
+          Question {{ page_num }} of {{ total_pages }}
       </div>
 
       <!-- Progress bar – value filled in by JS (to keep persisted state) -->
       <div class="progress quiz-progress-bar"
            id="quiz-progress-bar-container"
-           role="progressbar" aria-label="Quiz progress"
+           role="progressbar" aria-label="Quiz progress"
            aria-valuemin="0" aria-valuemax="100"
            style="height:1.5rem;">
         <div class="progress-bar bg-success"
@@ -33,7 +33,7 @@
   <div class="feedback-container">
       <div id="feedback-message" style="display:none;"></div>
       <a href="#" id="study-chord-btn" class="study-button" style="display:none;">
-        <div class="arrow-button">Study Chord</div>
+        <div class="arrow-button">Study Chord</div>
       </a>
   </div>
 
@@ -75,7 +75,7 @@
       </a>
       {% else %}
       <a href="{{ url_for('learn') }}" class="go-back-btn">
-          <div class="left-arrow-button left-arrow">Go Back</div>
+          <div class="left-arrow-button left-arrow">Go Back</div>
       </a>
       {% endif %}
 
@@ -91,6 +91,7 @@
      data-total-pages="{{ total_pages }}"
      data-correct-answer="{{ quiz_data.chord.correctAnswer }}"
      data-chord-items="{{ chord_items|tojson|safe }}"
+     data-is-navigating-backward="{{ request.args.get('navigating_backward', 'false') }}"
      style="display:none;"></div>
 
 <!-- ─── SCRIPT ───────────────────────────────────────────── -->
@@ -100,6 +101,7 @@ const $payload        = $('#quiz-data');
 const correctAnswer   = $payload.data('correct-answer');
 const currentPage     = parseInt($payload.data('current-page'));
 const totalPages      = parseInt($payload.data('total-pages'));
+const isNavigatingBackward = $payload.data('is-navigating-backward') === 'true';
 
 /* -------------------- PROGRESS BAR ------------------ */
 function setProgress (percent) {
@@ -108,10 +110,43 @@ function setProgress (percent) {
   $('#quiz-progress-bar-container').attr('aria-valuenow', percent);
 }
 
-/* On load – initialise bar assuming all previous pages done */
+// Track the highest page reached for progress calculation
+function getHighestPageReached() {
+  const stored = localStorage.getItem('quizHighestPageReached');
+  return stored ? parseInt(stored) : currentPage;
+}
+
+function updateHighestPageReached() {
+  const currentHighest = getHighestPageReached();
+  if (currentPage > currentHighest) {
+    localStorage.setItem('quizHighestPageReached', currentPage);
+  }
+}
+
+// Load stored progress from localStorage
+function loadStoredProgress() {
+  // Get the stored progress value if it exists
+  const storedProgress = localStorage.getItem('quizProgressPercent');
+  
+  // Always calculate progress based on the highest page reached, not current page
+  const highestPage = getHighestPageReached();
+  const calculatedPct = Math.round(((highestPage - 1) / totalPages) * 100);
+  
+  // Use stored progress if available, otherwise use calculated
+  if (storedProgress) {
+    setProgress(parseInt(storedProgress));
+  } else {
+    setProgress(calculatedPct);
+    localStorage.setItem('quizProgressPercent', calculatedPct);
+  }
+  
+  // Make sure we track the highest page right from the start
+  updateHighestPageReached();
+}
+
+/* On load – initialize the progress bar */
 $(function () {
-  const initialPct = Math.round(((currentPage - 1) / totalPages) * 100);
-  setProgress(initialPct);
+  loadStoredProgress();
   setUpQuizInteractions();
 });
 
@@ -167,6 +202,15 @@ function setUpQuizInteractions () {
         ? `/quiz/${next}`
         : '/quiz/results';
   });
+  
+  // Add navigating_backward parameter when going back
+  $('.go-back-btn').on('click', function(e) {
+    if ($(this).attr('href').includes('quiz/')) {
+      e.preventDefault();
+      const href = $(this).attr('href');
+      window.location.href = href + '?navigating_backward=true';
+    }
+  });
 }
 
 /* -------------------- ANSWER LOGIC ------------------ */
@@ -183,7 +227,7 @@ function processAnswer (selected, $opt) {
       if (res.correct) {
         $opt.addClass('correct');
         $('.chord-diagram').addClass('correct-match');
-        showFeedback('success', `Correct! “${selected}” is right!`);
+        showFeedback('success', `Correct! "${selected}" is right!`);
       } else {
         $opt.addClass('incorrect');
         $correctOpt && $correctOpt.addClass('correct');
@@ -195,9 +239,18 @@ function processAnswer (selected, $opt) {
         }
       }
 
-      /* update and persist progress */
-      const pct = Math.round((currentPage / totalPages) * 100);
-      setProgress(pct);
+      /* update progress only if not navigating backward or if we reached a new highest page */
+      updateHighestPageReached();
+      const highestPage = getHighestPageReached();
+      const pct = Math.round((highestPage / totalPages) * 100);
+      
+      // Only update if the new percentage is higher than stored
+      const storedPct = parseInt(localStorage.getItem('quizProgressPercent') || '0');
+      if (pct > storedPct) {
+        setProgress(pct);
+        localStorage.setItem('quizProgressPercent', pct);
+      }
+      
       $('.next-btn').removeClass('disabled');
   })
   .fail(() => showFeedback('error', 'Server error – please retry.'));

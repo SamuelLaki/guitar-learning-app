@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-
 {% block title %}Quiz Results{% endblock %}
 
 {% block content %}
@@ -33,11 +32,21 @@
     </div>
     {% endif %}
     <!-- End New Review Grid -->
-
+    
     <div class="results-actions">
         <a href="{{ url_for('homepage') }}" class="btn-results btn-secondary">Go Home</a>
-        <a href="{{ url_for('start_quiz') }}" class="btn-results btn-primary">Try Again</a>
+        <a href="{{ url_for('start_quiz', reset_quiz='true') }}" class="btn-results btn-primary">Try Again</a>
         <a href="{{ url_for('learn') }}" class="btn-results btn-secondary">Continue Learning</a>
     </div>
 </div>
-{% endblock %} 
+
+<!-- Clear localStorage quiz progress on results page load -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Clear quiz progress data from localStorage
+    localStorage.removeItem('quizProgressPercent');
+    localStorage.removeItem('quizHighestPage');
+    localStorage.removeItem('quizAnswers');
+});
+</script>
+{% endblock %}

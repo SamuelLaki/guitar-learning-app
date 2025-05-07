@@ -156,26 +156,44 @@ def learn():
     # 'completed_chords' is now initialized by before_request
     return render_template('learn.html', chord_items=chord_items, active_page='learn')
 
+# Modifications to start_quiz route
 @app.route('/quiz/start')
 def start_quiz():
+    # Check if reset_quiz parameter is present
+    reset_quiz = request.args.get('reset_quiz', 'false').lower() == 'true'
+    
+    if reset_quiz:
+        # Start fresh: Reset score, last page, and max page reached
+        session['quiz_score'] = 0
+        session['last_quiz_page'] = 1
+        session['current_page'] = 1
+        session['max_quiz_page_reached'] = 1
+        session['quiz_shuffled_options'] = {}
+        session['quiz_answers'] = {}
+        session.modified = True
+        return redirect(url_for('quiz_page', page_num=1, reset_quiz='true'))
+    
     last_page = session.get('last_quiz_page')
     total_pages = len(quiz_data)
 
     # Check if there's a valid last page stored and it's not beyond the last question
     if last_page and 0 < last_page <= total_pages:
         # Resume from the last page, score is already maintained
-        # max_quiz_page_reached should already be in session from previous attempt
         return redirect(url_for('quiz_page', page_num=last_page))
     else:
         # Start fresh: Reset score, last page, and max page reached
-        session['quiz_score'] = 0 # Keep for now, calculate final from answers
-        session['last_quiz_page'] = 1 # Start at page 1
-        session['current_page'] = 1 # Ensure current_page is also reset
-        session['max_quiz_page_reached'] = 1 # Initialize max page reached
-        session['quiz_shuffled_options'] = {} # Initialize storage for shuffled options
-        session['quiz_answers'] = {} # Initialize storage for user answers
-        session.modified = True # Ensure the new dicts are saved
+        session['quiz_score'] = 0
+        session['last_quiz_page'] = 1
+        session['current_page'] = 1
+        session['max_quiz_page_reached'] = 1
+        session['quiz_shuffled_options'] = {}
+        session['quiz_answers'] = {}
+        session.modified = True
         return redirect(url_for('quiz_page', page_num=1))
+
+# Modification to quiz_results.html button link
+# In the template:
+# <a href="{{ url_for('start_quiz', reset_quiz='true') }}" class="btn-results btn-primary">Try Again</a>
 
 @app.route('/quiz/<int:page_num>')
 def quiz_page(page_num):
