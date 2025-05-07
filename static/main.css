@@ -525,6 +525,7 @@ body {
 .score-display h2 {
     font-size: 28px; /* Reduced font size */
     margin: 0;
+    font-weight: bold;
 }
 
 .results-actions {
