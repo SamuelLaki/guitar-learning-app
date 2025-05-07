@@ -1,269 +1,219 @@
 {% extends "layout.html" %}
-
-{% block title %}Quiz - Match Chords{% endblock %}
+{% block title %}Quiz – Match Chords{% endblock %}
 
 {% block content %}
-<!-- Include jQuery UI for effects -->
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- jQuery‑UI (for drag / drop feedback) -->
+<link rel="stylesheet"
+      href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script  src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <div class="quiz-container">
-    <div class="quiz-title">
-        <h2>Match the chord to its name</h2>
-        <div class="quiz-progress-text">
-            Question {{ page_num }} of {{ total_pages }}
+
+  <!-- ─── TITLE + GLOBAL PROGRESS ───────────────────────── -->
+  <div class="quiz-title">
+      <h2>Match the chord to its name</h2>
+      <div class="quiz-progress-text">
+          Question {{ page_num }} of {{ total_pages }}
+      </div>
+
+      <!-- Progress bar – value filled in by JS (to keep persisted state) -->
+      <div class="progress quiz-progress-bar"
+           id="quiz-progress-bar-container"
+           role="progressbar" aria-label="Quiz progress"
+           aria-valuemin="0" aria-valuemax="100"
+           style="height:1.5rem;">
+        <div class="progress-bar bg-success"
+             id="quiz-progress-bar-fill" style="width:0%;">
+          <span id="quiz-progress-bar-text" class="text-white">0%</span>
         </div>
-        <!-- Quiz Progress Bar -->
-        <div class="progress quiz-progress-bar" role="progressbar"
-             id="quiz-progress-bar-container" {# Added ID #}
-             aria-label="Quiz progress"
-             aria-valuenow="{{ quiz_percent_complete }}"
-             aria-valuemin="0" aria-valuemax="100"
-             style="height: 1rem;">
-             <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger"
-               id="quiz-progress-bar-fill" {# Added ID #}
-               style="width: {{ quiz_percent_complete }}%;">
-               <span id="quiz-progress-bar-text">{{ quiz_percent_complete }}%</span> {# Added ID #}
+      </div>
+  </div>
+
+  <!-- ─── FEEDBACK AREA ──────────────────────────────────── -->
+  <div class="feedback-container">
+      <div id="feedback-message" style="display:none;"></div>
+      <a href="#" id="study-chord-btn" class="study-button" style="display:none;">
+        <div class="arrow-button">Study Chord</div>
+      </a>
+  </div>
+
+  <!-- ─── MAIN QUIZ BODY ─────────────────────────────────── -->
+  <div class="quiz-content">
+
+      <!-- Chord diagram -->
+      <div class="chord-diagram-container">
+          <div class="chord-diagram"
+               id="{{ quiz_data.chord.id }}"
+               data-answer="{{ quiz_data.chord.correctAnswer }}"
+               draggable="true">
+              <img src="{{ quiz_data.chord.image }}" alt="Chord diagram"
+                   class="chord-image">
+              <div class="drag-hint">Drag me to the correct answer!</div>
           </div>
-        </div>
-    </div>
+      </div>
 
-    <div class="feedback-container">
-        <div id="feedback-message" style="display: none;"></div>
-        <!-- Moved Study Chord Button Placeholder here -->
-        <a href="#" id="study-chord-btn" class="study-button" style="display: none;"><div class="arrow-button">Study Chord</div></a>
-    </div>
+      <!-- Options -->
+      <div class="chord-options-container">
+          <div class="chord-options">
+              {% for option in quiz_data.options %}
+              <div class="chord-option"
+                   id="option{{ loop.index }}"
+                   data-chord="{{ option }}">
+                  <div class="chord-name">{{ option }}</div>
+              </div>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
 
-    <div class="quiz-content">
-        <!-- One chord diagram at the top -->
-        <div class="chord-diagram-container">
-            <div class="chord-diagram" id="{{ quiz_data.chord.id }}" data-answer="{{ quiz_data.chord.correctAnswer }}" draggable="true">
-                <img src="{{ quiz_data.chord.image }}" alt="Chord diagram" class="chord-image">
-                <div class="drag-hint">Drag me to the correct answer!</div>
-            </div>
-        </div>
+  <!-- ─── NAVIGATION ─────────────────────────────────────── -->
+  <div class="navigation-buttons">
+      {% if page_num > 1 %}
+      <a href="{{ url_for('quiz_page', page_num=page_num-1) }}"
+         class="go-back-btn">
+          <div class="left-arrow-button left-arrow">Previous</div>
+      </a>
+      {% else %}
+      <a href="{{ url_for('learn') }}" class="go-back-btn">
+          <div class="left-arrow-button left-arrow">Go Back</div>
+      </a>
+      {% endif %}
 
-        <!-- Three options at the bottom -->
-        <div class="chord-options-container">
-            <div class="chord-options">
-                {% for option in quiz_data.options %}
-                <div class="chord-option" id="option{{ loop.index }}" data-chord="{{ option }}">
-                    <div class="chord-name">{{ option }}</div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="navigation-buttons">
-        {% if page_num > 1 %}
-        <a href="{{ url_for('quiz_page', page_num=page_num-1) }}" class="go-back-btn"><div class="left-arrow-button left-arrow">Previous</div></a>{% else %}<a href="{{ url_for('learn') }}" class="go-back-btn"><div class="left-arrow-button left-arrow">Go Back</div></a>{% endif %}
-        <!-- Removed Study Chord Button from here -->
-        <div class="next-btn disabled"><div class="right-arrow-button right-arrow">Next</div></div>
-    </div>
+      <div class="next-btn disabled">
+          <div class="right-arrow-button right-arrow">Next</div>
+      </div>
+  </div>
 </div>
 
-<!-- Pass data to JavaScript via a data attribute -->
-<div id="quiz-data" 
-     data-chord-items="{{ chord_items|tojson|safe }}"
-     data-correct-answer="{{ quiz_data.chord.correctAnswer }}"
+<!-- Hidden payload for JS -->
+<div id="quiz-data"
      data-current-page="{{ page_num }}"
      data-total-pages="{{ total_pages }}"
-     data-max-page-reached="{{ max_quiz_page_reached }}" {# Add max page reached #}
-     style="display:none;">
-</div>
+     data-correct-answer="{{ quiz_data.chord.correctAnswer }}"
+     data-chord-items="{{ chord_items|tojson|safe }}"
+     style="display:none;"></div>
 
-<script type="text/javascript">
-    // Get data from the hidden div
-    var quizDataElement = document.getElementById('quiz-data');
-    var correctAnswer = quizDataElement.getAttribute('data-correct-answer');
-    var currentPage = parseInt(quizDataElement.getAttribute('data-current-page'));
-    var totalPages = parseInt(quizDataElement.getAttribute('data-total-pages'));
-    var maxPageReached = parseInt(quizDataElement.getAttribute('data-max-page-reached')); // Get max page
-    
-    // Track if the user has answered correctly
-    var hasAnswered = false;
-    var correctOptionElement = null; // Store the correct option element
-    var feedbackDiv = $('#feedback-message'); // Cache feedback div
+<!-- ─── SCRIPT ───────────────────────────────────────────── -->
+<script>
+/* -------------------- CONSTANTS -------------------- */
+const $payload        = $('#quiz-data');
+const correctAnswer   = $payload.data('correct-answer');
+const currentPage     = parseInt($payload.data('current-page'));
+const totalPages      = parseInt($payload.data('total-pages'));
 
-    $(document).ready(function() {
-        setupDragAndDrop();
-        
-        // Find and store the correct option element on page load
-        $('.chord-option').each(function() {
-            if ($(this).data('chord') === correctAnswer) {
-                correctOptionElement = $(this);
-            }
-        });
-        
-        // Keep click functionality as a fallback
-        $('.chord-option').click(function() {
-            if (!hasAnswered) {
-                checkAnswer($(this).data('chord'), $(this));
-            }
-        });
-        
-        // Enable next button immediately if this page has already been passed
-        if (currentPage < maxPageReached) {
-            $('.next-btn').removeClass('disabled');
-        }
-        
-        // Handle next button
-        $('.next-btn').click(function() {
-            if (!$(this).hasClass('disabled')) {
-                var nextPage = currentPage + 1;
-                if (nextPage <= totalPages) {
-                    window.location.href = "/quiz/" + nextPage;
-                } else {
-                    window.location.href = "/quiz/results";
-                }
-            }
-        });
+/* -------------------- PROGRESS BAR ------------------ */
+function setProgress (percent) {
+  $('#quiz-progress-bar-fill').css('width', percent + '%');
+  $('#quiz-progress-bar-text').text(percent + '%');
+  $('#quiz-progress-bar-container').attr('aria-valuenow', percent);
+}
+
+/* On load – initialise bar assuming all previous pages done */
+$(function () {
+  const initialPct = Math.round(((currentPage - 1) / totalPages) * 100);
+  setProgress(initialPct);
+  setUpQuizInteractions();
+});
+
+/* -------------------- STATE ------------------------- */
+let hasAnswered = false;
+let $correctOpt = null;
+const $feedback = $('#feedback-message');
+
+/* -------------------- SETUP ------------------------- */
+function setUpQuizInteractions () {
+
+  // Identify the correct option element
+  $('.chord-option').each(function () {
+    if ($(this).data('chord') === correctAnswer) $correctOpt = $(this);
+  });
+
+  // Drag‑drop handlers
+  const diagram = document.querySelector('.chord-diagram');
+  const options = document.querySelectorAll('.chord-option');
+
+  diagram.addEventListener('dragstart', e => {
+    if (hasAnswered) return;
+    diagram.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', diagram.id);
+  });
+  diagram.addEventListener('dragend', () =>
+    diagram.classList.remove('dragging')
+  );
+
+  options.forEach(opt => {
+    opt.addEventListener('dragover', e => {
+      if (hasAnswered) return;
+      e.preventDefault(); opt.classList.add('drag-over');
     });
-    
-    function setupDragAndDrop() {
-        var chordDiagram = document.querySelector('.chord-diagram');
-        var chordOptions = document.querySelectorAll('.chord-option');
-        
-        // Make chord diagram draggable
-        chordDiagram.addEventListener('dragstart', function(e) {
-            if (hasAnswered) return; // Prevent dragging after answer
-            this.classList.add('dragging');
-            e.dataTransfer.setData('text', this.id);
-            // Remove the info message displayed during drag
-            // showFeedback('info', 'Dragging chord...'); 
-        });
-        
-        chordDiagram.addEventListener('dragend', function() {
-            this.classList.remove('dragging');
-            // Optionally hide info message or keep it until drop
-            // feedbackDiv.fadeOut(); 
-        });
-        
-        // Make options droppable
-        chordOptions.forEach(function(option) {
-            option.addEventListener('dragover', function(e) {
-                if (hasAnswered) return;
-                e.preventDefault();
-                this.classList.add('drag-over');
-            });
-            
-            option.addEventListener('dragleave', function() {
-                if (hasAnswered) return;
-                this.classList.remove('drag-over');
-            });
-            
-            option.addEventListener('drop', function(e) {
-                if (hasAnswered) return;
-                e.preventDefault();
-                this.classList.remove('drag-over');
-                
-                var targetOptionElement = $(this);
-                var chordName = targetOptionElement.data('chord');
-                
-                // --- Immediate Feedback --- 
-                if (!hasAnswered) { 
-                    hasAnswered = true; // Prevent further drops immediately
-                    targetOptionElement.addClass('checking'); // Add temporary style
-                    showFeedback('info', 'Checking...'); // Show interim message
-                    // Disable further dragging visually (optional, but good UX)
-                    chordDiagram.setAttribute('draggable', 'false');
-                    chordDiagram.style.cursor = 'default';
-                    // --- End Immediate Feedback ---
-                    
-                    checkAnswer(chordName, targetOptionElement);
-                }
-            });
-        });
-    }
-    
-    function checkAnswer(selectedAnswer, optionElement) {
-        // Remove the initial check here, as we set hasAnswered immediately on drop
-        // if (hasAnswered) return; 
+    opt.addEventListener('dragleave', () => opt.classList.remove('drag-over'));
+    opt.addEventListener('drop', e => {
+      if (hasAnswered) return;
+      e.preventDefault(); opt.classList.remove('drag-over');
+      processAnswer(opt.dataset.chord, $(opt));
+    });
 
-        // Submit the answer to the server
-        $.ajax({
-            url: '/quiz/submit_answer',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                answer: selectedAnswer,
-                correct_answer: correctAnswer
-            }),
-            success: function(response) {
-                // hasAnswered is already true
-                optionElement.removeClass('checking'); // Remove temporary style
-                
-                // Clear previous feedback message and hide button initially
-                feedbackDiv.hide();
-                $('#study-chord-btn').hide(); 
+    // Click fallback
+    $(opt).on('click', () => {
+      if (!hasAnswered) processAnswer($(opt).data('chord'), $(opt));
+    });
+  });
 
-                if (response.correct) {
-                    // Correct answer
-                    optionElement.addClass('correct');
-                    $('.chord-diagram').addClass('correct-match'); // Highlight diagram
-                    optionElement.addClass('correct-match');   // Highlight option
-                    showFeedback('success', 'Correct! "' + selectedAnswer + '" is the right match!');
-                } else {
-                    // Incorrect answer
-                    optionElement.addClass('incorrect');
-                    if (correctOptionElement) { 
-                        correctOptionElement.addClass('correct'); // Show the correct one
-                    }
-                    showFeedback('error', 'Not quite!'); // Show "Not quite!" message
-                    
-                    // Show the Study Chord button if we have the ID
-                    if (response.correct_chord_id) {
-                        var studyUrl = "/learn/" + response.correct_chord_id;
-                        // Show button directly instead of fading
-                        $('#study-chord-btn').attr('href', studyUrl).show(); 
-                    }
-                }
-                
-                // --- Update Progress Bar --- 
-                // Calculate percentage based on completing the *current* page
-                let newPercent = Math.round((currentPage / totalPages) * 100);
-                let currentPercentOnBar = parseInt($('#quiz-progress-bar-text').text().replace('%','')) || 0;
+  // Next‑button
+  $('.next-btn').on('click', function () {
+    if ($(this).hasClass('disabled')) return;
+    const next = currentPage + 1;
+    window.location.href = next <= totalPages
+        ? `/quiz/${next}`
+        : '/quiz/results';
+  });
+}
 
-                // Only update if this answer progresses the bar further
-                if (newPercent > currentPercentOnBar) {
-                    $('#quiz-progress-bar-fill').css('width', newPercent + '%');
-                    $('#quiz-progress-bar-text').text(newPercent + '%');
-                    $('#quiz-progress-bar-container').attr('aria-valuenow', newPercent);
-                }
-                // --- End Update Progress Bar ---
+/* -------------------- ANSWER LOGIC ------------------ */
+function processAnswer (selected, $opt) {
+  hasAnswered = true;
+  showFeedback('info', 'Checking…');
 
-                // Enable the next button
-                $('.next-btn').removeClass('disabled');
-            },
-            error: function() {
-                optionElement.removeClass('checking'); // Remove temporary style on error too
-                // Handle potential AJAX errors
-                showFeedback('error', 'Could not check answer. Please try again or refresh the page.');
-                // Do NOT reset hasAnswered here, as it allows re-submission in an inconsistent state.
-                // hasAnswered = false; 
-                // Re-enable dragging ONLY if submit fails? Maybe not ideal.
-                // chordDiagram.setAttribute('draggable', 'true');
-                // chordDiagram.style.cursor = 'move';
-            }
-        });
-    }
-    
-    function showFeedback(type, message) {
-        feedbackDiv.removeClass('success-message error-message info-message').hide(); // Reset classes and hide
-        var className = '';
-        if (type === 'success') {
-            className = 'success-message';
-        } else if (type === 'error') {
-            className = 'error-message';
-        } else if (type === 'info') {
-             className = 'info-message';
-        } else {
-            return; // Unknown type
+  $.post({
+    url: '/quiz/submit_answer',
+    contentType: 'application/json',
+    data: JSON.stringify({ answer: selected, correct_answer: correctAnswer })
+  })
+  .done(res => {
+      if (res.correct) {
+        $opt.addClass('correct');
+        $('.chord-diagram').addClass('correct-match');
+        showFeedback('success', `Correct! “${selected}” is right!`);
+      } else {
+        $opt.addClass('incorrect');
+        $correctOpt && $correctOpt.addClass('correct');
+        showFeedback('error', 'Not quite!');
+        if (res.correct_chord_id) {
+          $('#study-chord-btn')
+            .attr('href', `/learn/${res.correct_chord_id}`)
+            .show();
         }
-        
-        // Show directly instead of fading
-        feedbackDiv.addClass(className).html(message).show(); 
-    }
+      }
+
+      /* update and persist progress */
+      const pct = Math.round((currentPage / totalPages) * 100);
+      setProgress(pct);
+      $('.next-btn').removeClass('disabled');
+  })
+  .fail(() => showFeedback('error', 'Server error – please retry.'));
+}
+
+/* -------------------- FEEDBACK ---------------------- */
+function showFeedback (type, msg) {
+  $feedback
+    .removeClass('success-message error-message info-message')
+    .addClass(type === 'success'
+                ? 'success-message'
+                : type === 'error'
+                  ? 'error-message'
+                  : 'info-message')
+    .text(msg)
+    .show();
+}
 </script>
 {% endblock %}
