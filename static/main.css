@@ -2,7 +2,7 @@ html, body {
     height: 100%; /* Ensure html and body take full height */
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Prevent scrolling on the body */
+    overflow: auto; /* Prevent scrolling on the body */
 }
 
 body {
@@ -27,7 +27,7 @@ body {
 
 .main-content-area {
     flex-grow: 1; /* Make content area fill remaining space */
-    overflow-y: hidden; /* Strictly prevent scrolling within the content area */
+    overflow-y: auto; /* Strictly prevent scrolling within the content area */
     padding-bottom: 20px; /* Add some padding at the bottom */
 }
 
@@ -89,6 +89,11 @@ body {
 .chord-container {
     text-align: center;
     padding-top: 25px; /* Reduced padding */
+}
+
+.chordReadingImage {
+    width: 90%;
+    height: 90%;
 }
 
 .chord-grid {
@@ -267,7 +272,7 @@ body {
 
 .quiz-title {
     text-align: center;
-    margin-bottom: 15px; /* Reduced margin */
+    margin-bottom: 0px; /* Reduced margin */
     border: 1px solid #ccc;
     padding: 12px; /* Reduced padding */
     background-color: #f8f8f8;
