@@ -2,6 +2,8 @@
 
 This is a web application designed to help users learn and practice guitar chords through interactive lessons and quizzes.
 
+Made with Tesfalem Eshetu and Sarah Nasser
+
 ## Features
 
 - Interactive chord learning interface
