@@ -21,8 +21,8 @@ Made with Tesfalem Eshetu and Sarah Nasser
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+git clone https://github.com/SamuelLaki/guitar-learning-app.git
+cd guitar-learning-app
 ```
 
 2. Create a virtual environment (optional but recommended):
