@@ -10,8 +10,15 @@ Made with Tesfalem Eshetu and Sarah Nasser
 - Interactive chord learning interface
 - Chord visualization with images
 - Audio playback for each chord
-- Quiz mode to test your knowledge
+- Drag and Drop quiz mode to test your knowledge
 - Progress tracking
+
+<img width="1439" height="693" alt="Screenshot 2025-07-18 at 8 45 44 PM" src="https://github.com/user-attachments/assets/9e347c02-b24e-49ad-b86e-c4ada838b1bc" />
+
+<img width="1435" height="689" alt="Screenshot 2025-07-18 at 8 47 15 PM" src="https://github.com/user-attachments/assets/fb036d6b-fc99-464e-a62a-2253eaf5e227" />
+
+<img width="1432" height="694" alt="Screenshot 2025-07-18 at 8 46 32 PM" src="https://github.com/user-attachments/assets/68d41a2f-d5c6-4fff-840b-fa748344ddca" />
+
 
 ## Requirements
 
